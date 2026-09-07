@@ -1,0 +1,2863 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Water Bird — Field Engineer App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --teal: #114c5f;
+        --tl: #1e88a8;
+        --tp: #eaf4f7;
+        --tx: #0f2027;
+        --mu: #5a6b72;
+        --bd: rgba(17, 76, 95, 0.09);
+        --bh: rgba(30, 136, 168, 0.28);
+        --sh-sm: 0 4px 16px rgba(17, 76, 95, 0.08);
+        --sh-md: 0 14px 40px rgba(17, 76, 95, 0.11);
+        --ok: #1f9d6b;
+        --warn: #c67c1e;
+        --bad: #c0483f;
+      }
+      body {
+        font-family: "Poppins", sans-serif;
+        background: #070f14;
+        color: var(--tx);
+        -webkit-font-smoothing: antialiased;
+        /* min-height: 100vh; */
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(
+            900px 700px at 20% 10%,
+            rgba(17, 76, 95, 0.6),
+            transparent 70%
+          ),
+          radial-gradient(
+            700px 600px at 85% 80%,
+            rgba(30, 136, 168, 0.28),
+            transparent 70%
+          );
+        pointer-events: none;
+      }
+
+      /* ══════ STAGE ══════ */
+      .stage {
+        position: relative;
+        max-width: 1240px;
+        /* min-height: 100vh; */
+        margin: 0 auto;
+        padding: 44px 28px 60px;
+        display: grid;
+        grid-template-columns: 1fr 390px;
+        gap: 52px;
+        align-items: center;
+        justify-items: center;
+        box-sizing: border-box;
+      }
+      .stage .intro {
+        justify-self: start;
+      }
+      @media (max-width: 1060px) {
+        .stage {
+          grid-template-columns: 1fr;
+          gap: 36px;
+          padding: 32px 20px 48px;
+        }
+        .stage .intro {
+          justify-self: stretch;
+        }
+      }
+
+      .intro {
+        padding-top: 14px;
+        max-width: 560px;
+      }
+      .intro-ey {
+        display: none;
+      }
+      .intro h1 {
+        font-family: "Inter", sans-serif;
+        font-size: 34px;
+        font-weight: 600;
+        letter-spacing: -1.2px;
+        line-height: 1.1;
+        color: #fff;
+      }
+      .intro h1 em {
+        font-style: normal;
+        color: #7ed4e8;
+      }
+      .intro-sub {
+        font-size: 14px;
+        line-height: 1.65;
+        color: rgba(200, 220, 226, 0.62);
+        margin-top: 14px;
+        max-width: 48ch;
+      }
+      .intro-div {
+        width: 40px;
+        height: 2px;
+        background: var(--tl);
+        margin: 24px 0;
+      }
+
+      .pts {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 0;
+      }
+      .pt {
+        display: block;
+      }
+      .pt-ic,
+      .pt-d {
+        display: none;
+      }
+      .pt-t {
+        font-family: "Inter", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.86);
+      }
+
+      .hint {
+        display: none;
+      }
+      .hint-t {
+        font-family: "Inter", sans-serif;
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: rgba(126, 212, 232, 0.7);
+        margin-bottom: 9px;
+      }
+      .hint ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+      .hint li {
+        font-size: 12.5px;
+        color: rgba(200, 220, 226, 0.66);
+        padding-left: 15px;
+        position: relative;
+        line-height: 1.5;
+      }
+      .hint li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 7px;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--tl);
+      }
+      .hint b {
+        color: #fff;
+        font-weight: 600;
+      }
+
+      /* ══════ PHONE ══════ */
+      @media (max-width: 1060px) {
+        .phone-wrap {
+          margin: 0 auto;
+        }
+      }
+      .phone {
+        width: 390px;
+        max-width: 100%;
+        background: #0b1418;
+        border-radius: 44px;
+        padding: 11px;
+        box-shadow:
+          0 40px 90px rgba(0, 0, 0, 0.6),
+          0 0 0 1.5px rgba(255, 255, 255, 0.09),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+        position: relative;
+        margin: 0 auto;
+      }
+      .phone::after {
+        content: "";
+        position: absolute;
+        top: 26px;
+        left: -2.5px;
+        width: 2.5px;
+        height: 34px;
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.14);
+      }
+      .screen {
+        background: #f0f5f7;
+        border-radius: 34px;
+        overflow: hidden;
+        height: 770px;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+
+      /* Status bar */
+      .sbar {
+        background: #070f14;
+        color: #fff;
+        padding: 11px 22px 7px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-family: "Inter", sans-serif;
+        font-size: 11.5px;
+        font-weight: 700;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 5;
+      }
+      .sbar-r {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .sbar svg {
+        width: 14px;
+        height: 14px;
+        stroke: #fff;
+        stroke-width: 2;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .notch {
+        position: absolute;
+        top: 6px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 104px;
+        height: 23px;
+        background: #070f14;
+        border-radius: 14px;
+        z-index: 6;
+      }
+
+      /* App header */
+      .ahd {
+        background: linear-gradient(150deg, #070f14, #0e4256);
+        padding: 14px 18px 17px;
+        flex-shrink: 0;
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+      }
+      .ahd::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: radial-gradient(
+          320px 260px at 88% 0%,
+          rgba(30, 136, 168, 0.5),
+          transparent 72%
+        );
+      }
+      .ahd-top {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+      }
+      .ahd-av {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--teal), var(--tl));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Inter", sans-serif;
+        font-size: 12.5px;
+        font-weight: 800;
+        color: #fff;
+        flex-shrink: 0;
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
+      }
+      .ahd-hi {
+        font-size: 11px;
+        color: rgba(200, 220, 226, 0.55);
+        line-height: 1.2;
+      }
+      .ahd-n {
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.3px;
+        margin-top: 2px;
+      }
+      .ahd-bell {
+        margin-left: auto;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        cursor: pointer;
+      }
+      .ahd-bell svg {
+        width: 15px;
+        height: 15px;
+        stroke: #fff;
+        stroke-width: 1.9;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .ahd-bell i {
+        position: absolute;
+        top: 7px;
+        right: 8px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--warn);
+        border: 1.5px solid #0e3d4f;
+      }
+      .ahd-back {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      .ahd-back svg {
+        width: 16px;
+        height: 16px;
+        stroke: #fff;
+        stroke-width: 2.2;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .ahd-ttl {
+        font-family: "Inter", sans-serif;
+        font-size: 15px;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.3px;
+      }
+      .ahd-st {
+        font-size: 11px;
+        color: rgba(200, 220, 226, 0.55);
+        margin-top: 2px;
+      }
+
+      /* Sync ribbon */
+      .sync {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-top: 14px;
+        padding: 9px 12px;
+        border-radius: 10px;
+        background: rgba(31, 157, 107, 0.14);
+        border: 1px solid rgba(78, 199, 149, 0.24);
+      }
+      .sync.off {
+        background: rgba(198, 124, 30, 0.15);
+        border-color: rgba(229, 178, 95, 0.28);
+      }
+      .sync-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #4ec795;
+        flex-shrink: 0;
+        box-shadow: 0 0 0 3px rgba(78, 199, 149, 0.18);
+      }
+      .sync.off .sync-dot {
+        background: #e5b25f;
+        box-shadow: 0 0 0 3px rgba(229, 178, 95, 0.18);
+        animation: pulse 1.8s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.35;
+        }
+      }
+      .sync-t {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        color: #a8e9cd;
+      }
+      .sync.off .sync-t {
+        color: #f0cf9a;
+      }
+      .sync-b {
+        margin-left: auto;
+        font-family: "Inter", sans-serif;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.75);
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 6px;
+        padding: 5px 10px;
+        cursor: pointer;
+      }
+      .sync-b:hover {
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      /* Scroll body */
+      .abody {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px 16px 22px;
+        -webkit-overflow-scrolling: touch;
+      }
+      .abody::-webkit-scrollbar {
+        width: 0;
+      }
+
+      /* Section label */
+      .slbl {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        font-family: "Inter", sans-serif;
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--mu);
+        margin: 4px 0 11px;
+      }
+      .slbl b {
+        font-size: 10px;
+        color: var(--teal);
+        letter-spacing: 0.4px;
+      }
+      .slbl:not(:first-child) {
+        margin-top: 22px;
+      }
+
+      /* Day summary */
+      .dsum {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: var(--bd);
+        border-radius: 13px;
+        overflow: hidden;
+        margin-bottom: 6px;
+        border: 1px solid var(--bd);
+      }
+      .dsum-i {
+        background: #fff;
+        padding: 13px 8px;
+        text-align: center;
+      }
+      .dsum-v {
+        font-family: "Inter", sans-serif;
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: -0.8px;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+      }
+      .dsum-i.d .dsum-v {
+        color: var(--ok);
+      }
+      .dsum-i.p .dsum-v {
+        color: var(--tl);
+      }
+      .dsum-i.o .dsum-v {
+        color: var(--warn);
+      }
+      .dsum-l {
+        font-family: "Inter", sans-serif;
+        font-size: 8.5px;
+        font-weight: 800;
+        letter-spacing: 0.9px;
+        text-transform: uppercase;
+        color: var(--mu);
+        margin-top: 5px;
+      }
+
+      /* Job card */
+      .jc {
+        background: #fff;
+        border: 1px solid var(--bd);
+        border-radius: 14px;
+        padding: 14px;
+        margin-bottom: 11px;
+        cursor: pointer;
+        transition:
+          transform 0.2s,
+          box-shadow 0.25s,
+          border-color 0.2s;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        text-align: left;
+        font-family: inherit;
+      }
+      .jc:active {
+        transform: scale(0.985);
+      }
+      .jc:hover {
+        border-color: var(--bh);
+        box-shadow: var(--sh-sm);
+      }
+      .jc.now {
+        border-color: rgba(30, 136, 168, 0.4);
+        box-shadow: 0 0 0 3px rgba(30, 136, 168, 0.09);
+      }
+      .jc.done {
+        opacity: 0.62;
+      }
+      .jc-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 3px;
+      }
+      .jc.now .jc-bar {
+        background: var(--tl);
+      }
+      .jc.done .jc-bar {
+        background: var(--ok);
+      }
+      .jc.next .jc-bar {
+        background: #cdd9dd;
+      }
+      .jc.over .jc-bar {
+        background: var(--bad);
+      }
+      .jc-top {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 9px;
+      }
+      .jc-time {
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--tx);
+        font-variant-numeric: tabular-nums;
+      }
+      .jc-ref {
+        font-family: "Inter", sans-serif;
+        font-size: 10.5px;
+        font-weight: 800;
+        color: var(--tl);
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-family: "Inter", sans-serif;
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        border-radius: 14px;
+        white-space: nowrap;
+        margin-left: auto;
+      }
+      .chip::before {
+        content: "";
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+      .chip.c-prog {
+        background: rgba(30, 136, 168, 0.1);
+        color: #166b85;
+      }
+      .chip.c-done {
+        background: rgba(31, 157, 107, 0.11);
+        color: #137a51;
+      }
+      .chip.c-next {
+        background: rgba(17, 76, 95, 0.07);
+        color: var(--mu);
+      }
+      .chip.c-over {
+        background: rgba(192, 72, 63, 0.1);
+        color: #a13a32;
+      }
+      .jc-n {
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--tx);
+        letter-spacing: -0.3px;
+        line-height: 1.25;
+      }
+      .jc-a {
+        font-size: 11.5px;
+        color: var(--mu);
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .jc-a svg {
+        width: 12px;
+        height: 12px;
+        stroke: var(--mu);
+        stroke-width: 1.9;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        flex-shrink: 0;
+      }
+      .jc-ft {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 11px;
+        padding-top: 11px;
+        border-top: 1px solid var(--bd);
+        flex-wrap: wrap;
+      }
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: var(--tp);
+        border: 1px solid rgba(17, 76, 95, 0.08);
+        border-radius: 5px;
+        padding: 3px 8px;
+        font-family: "Inter", sans-serif;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--teal);
+      }
+      .tag.w {
+        background: rgba(198, 124, 30, 0.09);
+        border-color: rgba(198, 124, 30, 0.16);
+        color: #9e5f10;
+      }
+      .jc-go {
+        margin-left: auto;
+        font-family: "Inter", sans-serif;
+        font-size: 10.5px;
+        font-weight: 800;
+        color: var(--tl);
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .jc-go svg {
+        width: 11px;
+        height: 11px;
+        stroke: var(--tl);
+        stroke-width: 2.6;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: linear-gradient(135deg, var(--teal), var(--tl));
+        color: #fff;
+        padding: 14px 20px;
+        border-radius: 11px;
+        font-family: "Inter", sans-serif;
+        font-size: 13px;
+        font-weight: 800;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        box-shadow: 0 6px 18px rgba(17, 76, 95, 0.22);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .btn:active {
+        transform: scale(0.98);
+      }
+      .btn svg {
+        width: 16px;
+        height: 16px;
+        stroke: #fff;
+        stroke-width: 2.4;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .btn.o {
+        background: #fff;
+        color: var(--teal);
+        border: 1px solid var(--bd);
+        box-shadow: none;
+      }
+      .btn.o svg {
+        stroke: var(--teal);
+      }
+      .btn.ok {
+        background: linear-gradient(135deg, #17805a, #1f9d6b);
+        box-shadow: 0 6px 18px rgba(31, 157, 107, 0.26);
+      }
+      .btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+      .btn-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+      }
+
+      /* Job detail */
+      .card {
+        background: #fff;
+        border: 1px solid var(--bd);
+        border-radius: 14px;
+        overflow: hidden;
+        margin-bottom: 13px;
+      }
+      .card-hd {
+        padding: 13px 15px;
+        border-bottom: 1px solid var(--bd);
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .card-hd h3 {
+        font-family: "Inter", sans-serif;
+        font-size: 12.5px;
+        font-weight: 800;
+        color: var(--tx);
+      }
+      .card-hd .chip {
+        margin-left: auto;
+      }
+      .card-bd {
+        padding: 15px;
+      }
+      .kv {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 9px 0;
+        border-bottom: 1px dashed var(--bd);
+      }
+      .kv:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .kv:first-child {
+        padding-top: 0;
+      }
+      .kv-k {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--mu);
+        flex-shrink: 0;
+      }
+      .kv-v {
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--tx);
+        text-align: right;
+      }
+      .kv-v small {
+        display: block;
+        font-weight: 500;
+        font-size: 10.5px;
+        color: var(--mu);
+        margin-top: 2px;
+      }
+
+      /* Map strip */
+      .mapstrip {
+        height: 118px;
+        background: linear-gradient(135deg, #0e4256, #1e88a8);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .mapstrip svg.grid {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.22;
+      }
+      .mapstrip-pin {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+        position: relative;
+        z-index: 2;
+      }
+      .mapstrip-pin svg {
+        width: 19px;
+        height: 19px;
+        stroke: var(--teal);
+        stroke-width: 2.2;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .mapstrip-pin::after {
+        content: "";
+        position: absolute;
+        inset: -10px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.45);
+        animation: ring 2.4s infinite;
+      }
+      @keyframes ring {
+        0% {
+          transform: scale(0.8);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1.5);
+          opacity: 0;
+        }
+      }
+      .mapstrip-d {
+        position: absolute;
+        bottom: 9px;
+        left: 11px;
+        right: 11px;
+        background: rgba(7, 15, 20, 0.72);
+        backdrop-filter: blur(6px);
+        border-radius: 9px;
+        padding: 8px 11px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 3;
+      }
+      .mapstrip-d b {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        color: #fff;
+      }
+      .mapstrip-d span {
+        font-size: 10.5px;
+        color: rgba(200, 220, 226, 0.7);
+        margin-left: auto;
+      }
+
+      /* Form */
+      .fld {
+        margin-bottom: 14px;
+      }
+      .fld:last-child {
+        margin-bottom: 0;
+      }
+      .fld-l {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        font-family: "Inter", sans-serif;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1.1px;
+        text-transform: uppercase;
+        color: var(--mu);
+        margin-bottom: 7px;
+      }
+      .fld-l em {
+        font-style: normal;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--tl);
+        letter-spacing: 0;
+        text-transform: none;
+      }
+      .inp-w {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .inp {
+        width: 100%;
+        font-family: "Inter", sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--tx);
+        background: #f8fbfc;
+        border: 1.5px solid var(--bd);
+        border-radius: 11px;
+        padding: 13px 15px;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+        font-variant-numeric: tabular-nums;
+      }
+      .inp::placeholder {
+        color: #b3c2c7;
+        font-weight: 500;
+      }
+      .inp:focus {
+        border-color: var(--tl);
+        background: #fff;
+      }
+      .inp-u {
+        position: absolute;
+        right: 15px;
+        font-family: "Inter", sans-serif;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--mu);
+        pointer-events: none;
+      }
+      .inp.bad {
+        border-color: rgba(192, 72, 63, 0.5);
+        background: rgba(192, 72, 63, 0.04);
+        color: #a13a32;
+      }
+      .inp.good {
+        border-color: rgba(31, 157, 107, 0.42);
+      }
+      .fld-msg {
+        font-family: "Inter", sans-serif;
+        font-size: 10.5px;
+        font-weight: 700;
+        margin-top: 6px;
+        display: none;
+        align-items: center;
+        gap: 5px;
+      }
+      .fld-msg.show {
+        display: flex;
+      }
+      .fld-msg.bad {
+        color: #a13a32;
+      }
+      .fld-msg.good {
+        color: #137a51;
+      }
+      .fld-msg svg {
+        width: 12px;
+        height: 12px;
+        stroke: currentColor;
+        stroke-width: 2.4;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        flex-shrink: 0;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 11px;
+      }
+
+      /* Segmented status */
+      .seg3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+      }
+      .seg3 button {
+        font-family: "Inter", sans-serif;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        padding: 11px 6px;
+        border-radius: 9px;
+        border: 1.5px solid var(--bd);
+        background: #f8fbfc;
+        color: var(--mu);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .seg3 button.on.g {
+        background: rgba(31, 157, 107, 0.11);
+        border-color: rgba(31, 157, 107, 0.4);
+        color: #137a51;
+      }
+      .seg3 button.on.a {
+        background: rgba(198, 124, 30, 0.12);
+        border-color: rgba(198, 124, 30, 0.42);
+        color: #9e5f10;
+      }
+      .seg3 button.on.c {
+        background: rgba(192, 72, 63, 0.1);
+        border-color: rgba(192, 72, 63, 0.42);
+        color: #a13a32;
+      }
+
+      /* Checklist */
+      .ckl {
+        display: flex;
+        flex-direction: column;
+      }
+      .ckl-i {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 12px 0;
+        border-bottom: 1px dashed var(--bd);
+        cursor: pointer;
+      }
+      .ckl-i:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .ckl-b {
+        width: 22px;
+        height: 22px;
+        border-radius: 7px;
+        border: 1.5px solid #cdd9dd;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.2s;
+      }
+      .ckl-b svg {
+        width: 12px;
+        height: 12px;
+        stroke: #fff;
+        stroke-width: 3.2;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+      .ckl-i.on .ckl-b {
+        background: var(--ok);
+        border-color: var(--ok);
+      }
+      .ckl-i.on .ckl-b svg {
+        opacity: 1;
+      }
+      .ckl-t {
+        font-size: 12.5px;
+        color: var(--tx);
+        line-height: 1.4;
+      }
+      .ckl-i.on .ckl-t {
+        color: var(--mu);
+      }
+
+      /* Photo grid */
+      .pg {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 9px;
+      }
+      .pt-c {
+        aspect-ratio: 1;
+        border-radius: 11px;
+        background: linear-gradient(135deg, var(--teal), var(--tl));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .pt-c svg {
+        width: 20px;
+        height: 20px;
+        stroke: rgba(255, 255, 255, 0.6);
+        stroke-width: 1.7;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .pt-c span {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 14px 6px 5px;
+        background: linear-gradient(to top, rgba(7, 15, 20, 0.82), transparent);
+        font-family: "Inter", sans-serif;
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.9);
+        text-align: center;
+      }
+      .pt-add {
+        aspect-ratio: 1;
+        border-radius: 11px;
+        border: 1.5px dashed var(--bh);
+        background: var(--tp);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .pt-add:hover {
+        background: #dceef3;
+      }
+      .pt-add svg {
+        width: 19px;
+        height: 19px;
+        stroke: var(--teal);
+        stroke-width: 2;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .pt-add b {
+        font-family: "Inter", sans-serif;
+        font-size: 8.5px;
+        font-weight: 800;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        color: var(--teal);
+      }
+
+      /* Signature */
+      .sigpad {
+        border: 1.5px dashed var(--bh);
+        border-radius: 12px;
+        background: #f8fbfc;
+        height: 130px;
+        position: relative;
+        overflow: hidden;
+        touch-action: none;
+        cursor: crosshair;
+      }
+      .sigpad canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      .sigpad-ph {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+      .sigpad-ph svg {
+        width: 22px;
+        height: 22px;
+        stroke: #b3c2c7;
+        stroke-width: 1.8;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .sigpad-ph b {
+        font-family: "Inter", sans-serif;
+        font-size: 10.5px;
+        font-weight: 700;
+        color: #a9b8be;
+      }
+      .sigpad.inked .sigpad-ph {
+        opacity: 0;
+      }
+      .sig-ft {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 9px;
+      }
+      .sig-clr {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--mu);
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      .sig-nm {
+        font-size: 11px;
+        color: var(--mu);
+        margin-left: auto;
+      }
+
+      /* Draft badge */
+      .draft {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(31, 157, 107, 0.07);
+        border: 1px solid rgba(31, 157, 107, 0.18);
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: 14px;
+      }
+      .draft svg {
+        width: 14px;
+        height: 14px;
+        stroke: var(--ok);
+        stroke-width: 2.2;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        flex-shrink: 0;
+      }
+      .draft-t {
+        font-family: "Inter", sans-serif;
+        font-size: 10.5px;
+        font-weight: 700;
+        color: #137a51;
+        line-height: 1.4;
+      }
+
+      /* Progress */
+      .prog {
+        margin-bottom: 15px;
+      }
+      .prog-t {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 7px;
+      }
+      .prog-l {
+        font-family: "Inter", sans-serif;
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: var(--mu);
+      }
+      .prog-v {
+        font-family: "Inter", sans-serif;
+        font-size: 11.5px;
+        font-weight: 800;
+        color: var(--teal);
+        font-variant-numeric: tabular-nums;
+      }
+      .prog-tr {
+        height: 6px;
+        background: #e3ebee;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .prog-fl {
+        height: 100%;
+        border-radius: 4px;
+        background: linear-gradient(90deg, var(--teal), var(--tl));
+        transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      /* Success */
+      .done-s {
+        padding: 36px 22px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .done-ic {
+        width: 74px;
+        height: 74px;
+        border-radius: 50%;
+        background: rgba(31, 157, 107, 0.11);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        position: relative;
+      }
+      .done-ic svg {
+        width: 34px;
+        height: 34px;
+        stroke: var(--ok);
+        stroke-width: 2.6;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .done-ic::after {
+        content: "";
+        position: absolute;
+        inset: -8px;
+        border-radius: 50%;
+        border: 2px solid rgba(31, 157, 107, 0.22);
+      }
+      .done-s h2 {
+        font-family: "Inter", sans-serif;
+        font-size: 19px;
+        font-weight: 800;
+        letter-spacing: -0.6px;
+        color: var(--tx);
+      }
+      .done-s p {
+        font-size: 12.5px;
+        line-height: 1.65;
+        color: var(--mu);
+        margin-top: 9px;
+        max-width: 30ch;
+      }
+      .done-rc {
+        background: #fff;
+        border: 1px solid var(--bd);
+        border-radius: 13px;
+        width: 100%;
+        margin-top: 22px;
+        text-align: left;
+      }
+
+      /* Bottom nav */
+      .bnav {
+        background: #fff;
+        border-top: 1px solid var(--bd);
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        flex-shrink: 0;
+        padding-bottom: 6px;
+      }
+      .bnav button {
+        background: none;
+        border: none;
+        padding: 11px 4px 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        position: relative;
+        transition: color 0.2s;
+      }
+      .bnav svg {
+        width: 19px;
+        height: 19px;
+        stroke: #8a9ba1;
+        stroke-width: 1.9;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        transition: stroke 0.2s;
+      }
+      .bnav b {
+        font-family: "Inter", sans-serif;
+        font-size: 8.5px;
+        font-weight: 800;
+        letter-spacing: 0.4px;
+        color: #8a9ba1;
+        transition: color 0.2s;
+      }
+      .bnav button.on svg {
+        stroke: var(--teal);
+      }
+      .bnav button.on b {
+        color: var(--teal);
+      }
+      .bnav button.on::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 26px;
+        height: 2.5px;
+        border-radius: 0 0 3px 3px;
+        background: var(--teal);
+      }
+      .bnav-pill {
+        position: absolute;
+        top: 7px;
+        right: calc(50% - 19px);
+        min-width: 15px;
+        height: 15px;
+        border-radius: 8px;
+        background: var(--bad);
+        color: #fff;
+        font-family: "Inter", sans-serif;
+        font-size: 8.5px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 4px;
+        border: 1.5px solid #fff;
+      }
+
+      /* Toast */
+      .toast {
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        bottom: 78px;
+        background: #070f14;
+        border-radius: 12px;
+        padding: 13px 15px;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
+        z-index: 20;
+        opacity: 0;
+        transform: translateY(14px);
+        pointer-events: none;
+        transition:
+          opacity 0.28s,
+          transform 0.28s;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: none;
+      }
+      .toast-ic {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: rgba(31, 157, 107, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .toast-ic svg {
+        width: 14px;
+        height: 14px;
+        stroke: #4ec795;
+        stroke-width: 2.6;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .toast-t {
+        font-family: "Inter", sans-serif;
+        font-size: 11.5px;
+        font-weight: 800;
+        color: #fff;
+      }
+      .toast-s {
+        font-size: 10.5px;
+        color: rgba(200, 220, 226, 0.6);
+        margin-top: 2px;
+      }
+
+      /* View switching */
+      .view {
+        display: none;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+      }
+      .view.on {
+        display: flex;
+      }
+
+      /* Placeholder views */
+      .soon {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30px 26px;
+        text-align: center;
+      }
+      .soon-ic {
+        width: 56px;
+        height: 56px;
+        border-radius: 15px;
+        background: var(--tp);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+      }
+      .soon-ic svg {
+        width: 25px;
+        height: 25px;
+        stroke: var(--teal);
+        stroke-width: 1.7;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .soon h3 {
+        font-family: "Inter", sans-serif;
+        font-size: 14.5px;
+        font-weight: 800;
+        color: var(--tx);
+      }
+      .soon p {
+        font-size: 12.5px;
+        color: var(--mu);
+        margin-top: 8px;
+        line-height: 1.6;
+        max-width: 32ch;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <!-- ══════ INTRO ══════ -->
+      <div class="intro">
+        <span class="intro-ey"
+          >Field Engineer App &middot; Android &amp; iOS</span
+        >
+        <h1>Field work, <em>without the paper</em></h1>
+        <p class="intro-sub">
+          A focused mobile workflow for plant rooms, built for one thumb and no
+          signal.
+        </p>
+        <div class="intro-div"></div>
+
+        <div class="pts">
+          <div class="pt">
+            <div class="pt-ic">
+              <svg viewBox="0 0 24 24">
+                <path d="M21 12a9 9 0 1 1-6.22-8.56" />
+                <polyline points="21 3 21 9 15 9" />
+              </svg>
+            </div>
+            <div>
+              <div class="pt-t">Nothing is lost when the app closes</div>
+              <div class="pt-d">
+                Every keystroke writes to the device before it writes to the
+                server. Force-close mid-form and the readings are still there.
+              </div>
+            </div>
+          </div>
+          <div class="pt">
+            <div class="pt-ic">
+              <svg viewBox="0 0 24 24">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+            </div>
+            <div>
+              <div class="pt-t">GPS check-in, not a phone call</div>
+              <div class="pt-d">
+                Arrival is stamped automatically. The office sees it live
+                &mdash; no WhatsApp round trip.
+              </div>
+            </div>
+          </div>
+          <div class="pt">
+            <div class="pt-ic">
+              <svg viewBox="0 0 24 24">
+                <path d="M9 11l3 3L22 4" />
+                <path
+                  d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
+                />
+              </svg>
+            </div>
+            <div>
+              <div class="pt-t">Readings checked against spec on the spot</div>
+              <div class="pt-d">
+                An out-of-range value flags before the engineer leaves site, not
+                a week later in a spreadsheet.
+              </div>
+            </div>
+          </div>
+          <div class="pt">
+            <div class="pt-ic">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 19l7-7 3 3-7 7-3-3z" />
+                <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+                <line x1="2" y1="2" x2="9.586" y2="9.586" />
+              </svg>
+            </div>
+            <div>
+              <div class="pt-t">Customer signs on the phone</div>
+              <div class="pt-d">
+                Signature closes the job and generates the PDF. The report
+                reaches the customer before the van leaves.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hint">
+          <div class="hint-t">Try it &mdash; this prototype actually works</div>
+          <ul>
+            <li>
+              Tap <b>Emirates Pearl Hotel</b> to open the job, then
+              <b>Check in on site</b>.
+            </li>
+            <li>
+              Type a pH above <b>8.5</b> to see the out-of-spec warning fire.
+            </li>
+            <li>
+              Hit <b>Go offline</b> in the green ribbon, then keep filling the
+              form &mdash; nothing breaks.
+            </li>
+            <li>Sign with your mouse or finger, then <b>Complete job</b>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ══════ PHONE ══════ -->
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="screen">
+            <div class="notch"></div>
+            <div class="sbar">
+              <span>9:41</span>
+              <span class="sbar-r">
+                <svg viewBox="0 0 24 24" id="netIcon">
+                  <path d="M5 12.55a11 11 0 0 1 14.08 0" />
+                  <path d="M1.42 9a16 16 0 0 1 21.16 0" />
+                  <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+                  <line x1="12" y1="20" x2="12.01" y2="20" />
+                </svg>
+                <svg viewBox="0 0 24 24">
+                  <rect x="1" y="6" width="18" height="12" rx="2" />
+                  <line x1="23" y1="11" x2="23" y2="13" />
+                </svg>
+              </span>
+            </div>
+
+            <!-- ═══ VIEW: TODAY ═══ -->
+            <div class="view on" id="v-today">
+              <div class="ahd">
+                <div class="ahd-top">
+                  <div class="ahd-av">RK</div>
+                  <div>
+                    <div class="ahd-hi">Friday, 4 September</div>
+                    <div class="ahd-n">Rajesh Kumar</div>
+                  </div>
+                  <button class="ahd-bell" aria-label="Notifications">
+                    <i></i
+                    ><svg viewBox="0 0 24 24">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="sync" id="sync1">
+                  <span class="sync-dot"></span>
+                  <span class="sync-t" id="syncT1"
+                    >Synced &middot; all work uploaded</span
+                  >
+                  <button class="sync-b" onclick="toggleNet()" id="syncB1">
+                    Go offline
+                  </button>
+                </div>
+              </div>
+
+              <div class="abody">
+                <div class="dsum">
+                  <div class="dsum-i d">
+                    <div class="dsum-v">1</div>
+                    <div class="dsum-l">Done</div>
+                  </div>
+                  <div class="dsum-i p">
+                    <div class="dsum-v">4</div>
+                    <div class="dsum-l">To do</div>
+                  </div>
+                  <div class="dsum-i o">
+                    <div class="dsum-v">1</div>
+                    <div class="dsum-l">Overdue</div>
+                  </div>
+                </div>
+
+                <div class="slbl">Up next <b>Al Barsha, 6 km</b></div>
+
+                <button class="jc now" onclick="openJob()">
+                  <span class="jc-bar"></span>
+                  <div class="jc-top">
+                    <span class="jc-time">08:00</span>
+                    <span class="jc-ref">WO-8412</span>
+                    <span class="chip c-next">Assigned</span>
+                  </div>
+                  <div class="jc-n">Emirates Pearl Hotel</div>
+                  <div class="jc-a">
+                    <svg viewBox="0 0 24 24">
+                      <path
+                        d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"
+                      />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    Al Barsha 1, Dubai
+                  </div>
+                  <div class="jc-ft">
+                    <span class="tag">STP 250 KLD</span>
+                    <span class="tag">Monthly AMC</span>
+                    <span class="jc-go"
+                      >Open
+                      <svg viewBox="0 0 24 24">
+                        <polyline points="9 18 15 12 9 6" /></svg
+                    ></span>
+                  </div>
+                </button>
+
+                <div class="slbl">Later today</div>
+
+                <button
+                  class="jc over"
+                  onclick="
+                    toast(
+                      'Overdue job',
+                      'Raised 24 Aug — office flagged it for you',
+                    )
+                  "
+                >
+                  <span class="jc-bar"></span>
+                  <div class="jc-top">
+                    <span class="jc-time">11:00</span>
+                    <span class="jc-ref">WO-8415</span>
+                    <span class="chip c-over">11 days late</span>
+                  </div>
+                  <div class="jc-n">Jebel Ali Free Zone</div>
+                  <div class="jc-a">
+                    <svg viewBox="0 0 24 24">
+                      <path
+                        d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"
+                      />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    JAFZA South, Dubai
+                  </div>
+                  <div class="jc-ft">
+                    <span class="tag">Cooling Tower Dosing</span>
+                    <span class="tag w">Breakdown</span>
+                    <span class="jc-go"
+                      >Open
+                      <svg viewBox="0 0 24 24">
+                        <polyline points="9 18 15 12 9 6" /></svg
+                    ></span>
+                  </div>
+                </button>
+
+                <button
+                  class="jc next"
+                  onclick="toast('Job opened', 'Marina Heights Tower — 13:30')"
+                >
+                  <span class="jc-bar"></span>
+                  <div class="jc-top">
+                    <span class="jc-time">13:30</span>
+                    <span class="jc-ref">WO-8414</span>
+                    <span class="chip c-next">Assigned</span>
+                  </div>
+                  <div class="jc-n">Marina Heights Tower</div>
+                  <div class="jc-a">
+                    <svg viewBox="0 0 24 24">
+                      <path
+                        d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"
+                      />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    Dubai Marina
+                  </div>
+                  <div class="jc-ft">
+                    <span class="tag">Booster Pump Set</span>
+                    <span class="tag">Quarterly AMC</span>
+                    <span class="jc-go"
+                      >Open
+                      <svg viewBox="0 0 24 24">
+                        <polyline points="9 18 15 12 9 6" /></svg
+                    ></span>
+                  </div>
+                </button>
+
+                <div class="slbl">Completed</div>
+
+                <button
+                  class="jc done"
+                  onclick="
+                    toast(
+                      'Report submitted',
+                      'Sobha Hartland STP — synced 07:52',
+                    )
+                  "
+                >
+                  <span class="jc-bar"></span>
+                  <div class="jc-top">
+                    <span class="jc-time">06:45</span>
+                    <span class="jc-ref">WO-8407</span>
+                    <span class="chip c-done">Completed</span>
+                  </div>
+                  <div class="jc-n">Sobha Hartland STP</div>
+                  <div class="jc-a">
+                    <svg viewBox="0 0 24 24">
+                      <path
+                        d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"
+                      />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    Mohammed Bin Rashid City
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <!-- ═══ VIEW: JOB DETAIL ═══ -->
+            <div class="view" id="v-job">
+              <div class="ahd">
+                <div class="ahd-top">
+                  <button
+                    class="ahd-back"
+                    onclick="go('today')"
+                    aria-label="Back"
+                  >
+                    <svg viewBox="0 0 24 24">
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                  </button>
+                  <div>
+                    <div class="ahd-ttl">WO-8412</div>
+                    <div class="ahd-st">Monthly AMC &middot; STP 250 KLD</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="abody">
+                <div class="card">
+                  <div class="mapstrip">
+                    <svg
+                      class="grid"
+                      viewBox="0 0 300 120"
+                      preserveAspectRatio="none"
+                    >
+                      <g stroke="#fff" stroke-width="1" fill="none">
+                        <path
+                          d="M0 34 H300 M0 78 H300 M52 0 V120 M148 0 V120 M234 0 V120"
+                        />
+                        <path d="M0 96 H300" stroke-width="2.5" />
+                      </g>
+                    </svg>
+                    <div class="mapstrip-pin">
+                      <svg viewBox="0 0 24 24">
+                        <path
+                          d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"
+                        />
+                        <circle cx="12" cy="10" r="3" />
+                      </svg>
+                    </div>
+                    <div class="mapstrip-d">
+                      <b>6.2 km &middot; 14 min</b>
+                      <span>Sheikh Zayed Rd &rarr; Al Barsha 1</span>
+                    </div>
+                  </div>
+                  <div class="card-bd">
+                    <div class="kv">
+                      <span class="kv-k">Customer</span
+                      ><span class="kv-v"
+                        >Emirates Pearl Hotel<small
+                          >Faisal Abdulla &middot; Chief Engineer</small
+                        ></span
+                      >
+                    </div>
+                    <div class="kv">
+                      <span class="kv-k">Site</span
+                      ><span class="kv-v"
+                        >Basement 2, Plant Room<small
+                          >Al Barsha 1, Dubai</small
+                        ></span
+                      >
+                    </div>
+                    <div class="kv">
+                      <span class="kv-k">Contract</span
+                      ><span class="kv-v"
+                        >AMC-1184<small
+                          >Monthly &middot; expires 31 Mar 2027</small
+                        ></span
+                      >
+                    </div>
+                    <div class="kv">
+                      <span class="kv-k">Last visit</span
+                      ><span class="kv-v"
+                        >6 Aug 2026<small
+                          >Passed &middot; scum baffle noted</small
+                        ></span
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-hd">
+                    <h3>Site access</h3>
+                  </div>
+                  <div class="card-bd" style="padding-top: 12px">
+                    <div class="kv">
+                      <span class="kv-k">Gate pass</span
+                      ><span class="kv-v">Required &mdash; security desk</span>
+                    </div>
+                    <div class="kv">
+                      <span class="kv-k">Keys</span
+                      ><span class="kv-v"
+                        >Plant room key with duty engineer</span
+                      >
+                    </div>
+                    <div class="kv">
+                      <span class="kv-k">PPE</span
+                      ><span class="kv-v">Boots, gloves, gas monitor</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button class="btn" onclick="checkIn()" id="ciBtn">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                  Check in on site
+                </button>
+                <div style="height: 9px"></div>
+                <button
+                  class="btn o"
+                  onclick="
+                    toast(
+                      'Calling site contact',
+                      'Faisal Abdulla · +971 50 ••• 4471',
+                    )
+                  "
+                >
+                  <svg viewBox="0 0 24 24">
+                    <path
+                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"
+                    />
+                  </svg>
+                  Call site contact
+                </button>
+              </div>
+            </div>
+
+            <!-- ═══ VIEW: INSPECTION ═══ -->
+            <div class="view" id="v-insp">
+              <div class="ahd">
+                <div class="ahd-top">
+                  <button
+                    class="ahd-back"
+                    onclick="go('job')"
+                    aria-label="Back"
+                  >
+                    <svg viewBox="0 0 24 24">
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                  </button>
+                  <div>
+                    <div class="ahd-ttl">STP monthly checklist</div>
+                    <div class="ahd-st">
+                      Emirates Pearl Hotel &middot; on site 08:04
+                    </div>
+                  </div>
+                </div>
+                <div class="sync" id="sync2">
+                  <span class="sync-dot"></span>
+                  <span class="sync-t" id="syncT2"
+                    >Synced &middot; all work uploaded</span
+                  >
+                  <button class="sync-b" onclick="toggleNet()" id="syncB2">
+                    Go offline
+                  </button>
+                </div>
+              </div>
+
+              <div class="abody">
+                <div class="prog">
+                  <div class="prog-t">
+                    <span class="prog-l">Form progress</span>
+                    <span class="prog-v" id="progV">0 of 12</span>
+                  </div>
+                  <div class="prog-tr">
+                    <div class="prog-fl" id="progF" style="width: 0%"></div>
+                  </div>
+                </div>
+
+                <div class="draft">
+                  <svg viewBox="0 0 24 24">
+                    <path
+                      d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+                    />
+                    <polyline points="17 21 17 13 7 13 7 21" />
+                    <polyline points="7 3 7 8 15 8" />
+                  </svg>
+                  <div class="draft-t" id="draftT">
+                    Draft held on this device &mdash; nothing is lost if the app
+                    closes
+                  </div>
+                </div>
+
+                <div class="slbl">
+                  Water quality readings <b id="specB">Enter values</b>
+                </div>
+
+                <div class="card">
+                  <div class="card-bd">
+                    <div class="fld">
+                      <div class="fld-l">
+                        <span>pH &mdash; outlet</span
+                        ><em>Spec 6.5 &ndash; 8.5</em>
+                      </div>
+                      <div class="inp-w">
+                        <input
+                          class="inp"
+                          id="ph"
+                          type="number"
+                          step="0.1"
+                          inputmode="decimal"
+                          placeholder="7.2"
+                          data-min="6.5"
+                          data-max="8.5"
+                          data-name="pH"
+                        />
+                      </div>
+                      <div class="fld-msg" id="ph-m"></div>
+                    </div>
+
+                    <div class="grid2">
+                      <div class="fld">
+                        <div class="fld-l"><span>Chlorine</span></div>
+                        <div class="inp-w">
+                          <input
+                            class="inp"
+                            id="cl"
+                            type="number"
+                            step="0.1"
+                            inputmode="decimal"
+                            placeholder="0.6"
+                            data-min="0.2"
+                            data-max="1.0"
+                            data-name="Residual chlorine"
+                          />
+                          <span class="inp-u">mg/L</span>
+                        </div>
+                        <div class="fld-msg" id="cl-m"></div>
+                      </div>
+                      <div class="fld">
+                        <div class="fld-l"><span>TSS</span></div>
+                        <div class="inp-w">
+                          <input
+                            class="inp"
+                            id="tss"
+                            type="number"
+                            inputmode="decimal"
+                            placeholder="8"
+                            data-min="0"
+                            data-max="10"
+                            data-name="TSS"
+                          />
+                          <span class="inp-u">mg/L</span>
+                        </div>
+                        <div class="fld-msg" id="tss-m"></div>
+                      </div>
+                    </div>
+
+                    <div class="grid2">
+                      <div class="fld">
+                        <div class="fld-l"><span>Flow 24h</span></div>
+                        <div class="inp-w">
+                          <input
+                            class="inp"
+                            id="flow"
+                            type="number"
+                            inputmode="decimal"
+                            placeholder="214"
+                            data-min="0"
+                            data-max="250"
+                            data-name="Flow"
+                          />
+                          <span class="inp-u">KLD</span>
+                        </div>
+                        <div class="fld-msg" id="flow-m"></div>
+                      </div>
+                      <div class="fld">
+                        <div class="fld-l"><span>MLSS</span></div>
+                        <div class="inp-w">
+                          <input
+                            class="inp"
+                            id="mlss"
+                            type="number"
+                            inputmode="decimal"
+                            placeholder="3150"
+                            data-min="2500"
+                            data-max="4000"
+                            data-name="MLSS"
+                          />
+                          <span class="inp-u">mg/L</span>
+                        </div>
+                        <div class="fld-msg" id="mlss-m"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="slbl">Equipment status</div>
+                <div class="card">
+                  <div class="card-bd">
+                    <div class="fld">
+                      <div class="fld-l">
+                        <span>Overall plant condition</span>
+                      </div>
+                      <div class="seg3" id="seg-cond">
+                        <button class="g" onclick="pick(this, 'g')">OK</button>
+                        <button class="a" onclick="pick(this, 'a')">
+                          Attention
+                        </button>
+                        <button class="c" onclick="pick(this, 'c')">
+                          Critical
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="slbl">Checklist <b id="ckB">0 of 5</b></div>
+                <div class="card">
+                  <div class="card-bd">
+                    <div class="ckl" id="ckl">
+                      <div class="ckl-i" onclick="tick(this)">
+                        <span class="ckl-b"
+                          ><svg viewBox="0 0 24 24">
+                            <polyline points="20 6 9 17 4 12" /></svg></span
+                        ><span class="ckl-t"
+                          >Bar screen cleared, no blockage</span
+                        >
+                      </div>
+                      <div class="ckl-i" onclick="tick(this)">
+                        <span class="ckl-b"
+                          ><svg viewBox="0 0 24 24">
+                            <polyline points="20 6 9 17 4 12" /></svg></span
+                        ><span class="ckl-t"
+                          >Blowers 1 &amp; 2 running, no abnormal noise</span
+                        >
+                      </div>
+                      <div class="ckl-i" onclick="tick(this)">
+                        <span class="ckl-b"
+                          ><svg viewBox="0 0 24 24">
+                            <polyline points="20 6 9 17 4 12" /></svg></span
+                        ><span class="ckl-t"
+                          >Diffuser aeration pattern uniform</span
+                        >
+                      </div>
+                      <div class="ckl-i" onclick="tick(this)">
+                        <span class="ckl-b"
+                          ><svg viewBox="0 0 24 24">
+                            <polyline points="20 6 9 17 4 12" /></svg></span
+                        ><span class="ckl-t"
+                          >Chlorine dosing pump stroke verified</span
+                        >
+                      </div>
+                      <div class="ckl-i" onclick="tick(this)">
+                        <span class="ckl-b"
+                          ><svg viewBox="0 0 24 24">
+                            <polyline points="20 6 9 17 4 12" /></svg></span
+                        ><span class="ckl-t"
+                          >Panel indications and alarms healthy</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="slbl">Chemicals used</div>
+                <div class="card">
+                  <div class="card-bd">
+                    <div class="grid2">
+                      <div class="fld">
+                        <div class="fld-l"><span>Hypochlorite</span></div>
+                        <div class="inp-w">
+                          <input
+                            class="inp"
+                            id="chem1"
+                            type="number"
+                            inputmode="decimal"
+                            placeholder="25"
+                          /><span class="inp-u">kg</span>
+                        </div>
+                      </div>
+                      <div class="fld">
+                        <div class="fld-l"><span>Polymer</span></div>
+                        <div class="inp-w">
+                          <input
+                            class="inp"
+                            id="chem2"
+                            type="number"
+                            inputmode="decimal"
+                            placeholder="4"
+                          /><span class="inp-u">kg</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="slbl">Site photos <b id="phB">3 attached</b></div>
+                <div class="pg" style="margin-bottom: 20px">
+                  <div class="pt-c">
+                    <svg viewBox="0 0 24 24">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" /></svg
+                    ><span>Aeration</span>
+                  </div>
+                  <div class="pt-c">
+                    <svg viewBox="0 0 24 24">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" /></svg
+                    ><span>Clarifier</span>
+                  </div>
+                  <button class="pt-add" onclick="addPhoto()">
+                    <svg viewBox="0 0 24 24">
+                      <path
+                        d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
+                      />
+                      <circle cx="12" cy="13" r="4" />
+                    </svg>
+                    <b>Add</b>
+                  </button>
+                </div>
+
+                <div class="slbl">Customer sign-off</div>
+                <div class="card">
+                  <div class="card-bd">
+                    <div class="sigpad" id="sigpad">
+                      <canvas id="sig"></canvas>
+                      <div class="sigpad-ph">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M12 19l7-7 3 3-7 7-3-3z" />
+                          <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+                          <line x1="2" y1="2" x2="9.586" y2="9.586" />
+                        </svg>
+                        <b>Customer signs here</b>
+                      </div>
+                    </div>
+                    <div class="sig-ft">
+                      <button class="sig-clr" onclick="clearSig()">
+                        Clear
+                      </button>
+                      <span class="sig-nm"
+                        >Faisal Abdulla &middot; Chief Engineer</span
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  class="btn ok"
+                  id="submitBtn"
+                  onclick="submitJob()"
+                  disabled
+                >
+                  <svg viewBox="0 0 24 24">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span id="submitTxt">Complete job</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- ═══ VIEW: DONE ═══ -->
+            <div class="view" id="v-done">
+              <div class="ahd">
+                <div class="ahd-top">
+                  <div>
+                    <div class="ahd-ttl">Job closed</div>
+                    <div class="ahd-st">
+                      WO-8412 &middot; Emirates Pearl Hotel
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="abody">
+                <div class="done-s">
+                  <div class="done-ic">
+                    <svg viewBox="0 0 24 24">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </div>
+                  <h2>Report submitted</h2>
+                  <p id="doneMsg">
+                    PDF generated and emailed to the customer. The office
+                    dashboard updated live.
+                  </p>
+                  <div class="done-rc">
+                    <div class="card-bd">
+                      <div class="kv">
+                        <span class="kv-k">On site</span
+                        ><span class="kv-v"
+                          >08:04 &ndash; 09:41<small>1h 37m</small></span
+                        >
+                      </div>
+                      <div class="kv">
+                        <span class="kv-k">Readings</span
+                        ><span class="kv-v" id="doneRead">5 recorded</span>
+                      </div>
+                      <div class="kv">
+                        <span class="kv-k">Outcome</span
+                        ><span class="kv-v" id="doneOut">Passed</span>
+                      </div>
+                      <div class="kv">
+                        <span class="kv-k">Signed by</span
+                        ><span class="kv-v"
+                          >Faisal Abdulla<small>4 Sep 2026, 09:44</small></span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <div style="height: 20px"></div>
+                  <button class="btn" onclick="go('today')">
+                    <svg viewBox="0 0 24 24">
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                      <polyline points="12 5 19 12 12 19" />
+                    </svg>
+                    Next job &mdash; Jebel Ali Free Zone
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ═══ VIEW: PLACEHOLDERS ═══ -->
+            <div class="view" id="v-sched">
+              <div class="ahd">
+                <div class="ahd-top">
+                  <div>
+                    <div class="ahd-ttl">My schedule</div>
+                    <div class="ahd-st">
+                      September 2026 &middot; 47 visits assigned
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="soon">
+                <div class="soon-ic">
+                  <svg viewBox="0 0 24 24">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                </div>
+                <h3>Month view</h3>
+                <p>
+                  The engineer's own slice of the AMC calendar &mdash; same data
+                  as the dashboard, filtered to Rajesh and his zone.
+                </p>
+              </div>
+            </div>
+            <div class="view" id="v-sites">
+              <div class="ahd">
+                <div class="ahd-top">
+                  <div>
+                    <div class="ahd-ttl">Sites &amp; assets</div>
+                    <div class="ahd-st">34 sites in Dubai Central</div>
+                  </div>
+                </div>
+              </div>
+              <div class="soon">
+                <div class="soon-ic">
+                  <svg viewBox="0 0 24 24">
+                    <ellipse cx="12" cy="5" rx="9" ry="3" />
+                    <path d="M21 12c0 1.66-4.03 3-9 3s-9-1.34-9-3" />
+                    <path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5" />
+                  </svg>
+                </div>
+                <h3>Asset history on site</h3>
+                <p>
+                  Scan the QR on a plant and get its full service record &mdash;
+                  every visit, reading and part replaced.
+                </p>
+              </div>
+            </div>
+            <div class="view" id="v-me">
+              <div class="ahd">
+                <div class="ahd-top">
+                  <div class="ahd-av">RK</div>
+                  <div>
+                    <div class="ahd-ttl">Rajesh Kumar</div>
+                    <div class="ahd-st">
+                      Senior Service Engineer &middot; Dubai Central
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="soon">
+                <div class="soon-ic">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </div>
+                <h3>Profile &amp; certifications</h3>
+                <p>
+                  Skills, zone, certification expiry and this month's
+                  performance &mdash; the same figures the manager sees.
+                </p>
+              </div>
+            </div>
+
+            <!-- Toast -->
+            <div class="toast" id="toast">
+              <div class="toast-ic">
+                <svg viewBox="0 0 24 24">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <div>
+                <div class="toast-t" id="toastT">Checked in</div>
+                <div class="toast-s" id="toastS">GPS stamped 08:04</div>
+              </div>
+            </div>
+
+            <!-- Bottom nav -->
+            <div class="bnav" id="bnav">
+              <button class="on" data-v="today" onclick="go('today')">
+                <svg viewBox="0 0 24 24">
+                  <path d="M9 11H3v10h6zM15 3H9v18h6zM21 7h-6v14h6z" />
+                </svg>
+                <b>Today</b>
+                <span class="bnav-pill">5</span>
+              </button>
+              <button data-v="sched" onclick="go('sched')">
+                <svg viewBox="0 0 24 24">
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                <b>Schedule</b>
+              </button>
+              <button data-v="insp" onclick="go('insp')">
+                <svg viewBox="0 0 24 24">
+                  <path d="M9 11l3 3L22 4" />
+                  <path
+                    d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
+                  />
+                </svg>
+                <b>Forms</b>
+              </button>
+              <button data-v="sites" onclick="go('sites')">
+                <svg viewBox="0 0 24 24">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                <b>Sites</b>
+              </button>
+              <button data-v="me" onclick="go('me')">
+                <svg viewBox="0 0 24 24">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                <b>Me</b>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /* ════════ STATE (in-memory — stands in for the on-device draft store) ════════ */
+      const state = {
+        online: true,
+        queued: 0,
+        readings: {},
+        condition: null,
+        checks: 0,
+        photos: 3,
+        signed: false,
+        checkedIn: false,
+      };
+
+      /* ════════ VIEW SWITCHING ════════ */
+      function go(v) {
+        document
+          .querySelectorAll(".view")
+          .forEach((e) => e.classList.remove("on"));
+        document.getElementById("v-" + v).classList.add("on");
+        document
+          .querySelectorAll("#bnav button")
+          .forEach((b) =>
+            b.classList.toggle(
+              "on",
+              b.dataset.v === v ||
+                (v === "job" && b.dataset.v === "today") ||
+                (v === "done" && b.dataset.v === "today"),
+            ),
+          );
+        document.querySelectorAll(".abody").forEach((e) => (e.scrollTop = 0));
+      }
+      function openJob() {
+        go("job");
+      }
+
+      /* ════════ TOAST ════════ */
+      let toastTimer;
+      function toast(t, s) {
+        document.getElementById("toastT").textContent = t;
+        document.getElementById("toastS").textContent = s;
+        const el = document.getElementById("toast");
+        el.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.remove("show"), 2600);
+      }
+
+      /* ════════ OFFLINE / SYNC ════════ */
+      function toggleNet() {
+        state.online = !state.online;
+        paintSync();
+        if (state.online) {
+          if (state.queued) {
+            toast(
+              "Back online",
+              state.queued +
+                " queued item" +
+                (state.queued > 1 ? "s" : "") +
+                " uploading now",
+            );
+            state.queued = 0;
+            setTimeout(paintSync, 900);
+          } else {
+            toast("Back online", "Everything already up to date");
+          }
+        } else {
+          toast(
+            "Working offline",
+            "Keep going — entries are saved on the device",
+          );
+        }
+      }
+      function paintSync() {
+        const off = !state.online;
+        [1, 2].forEach((n) => {
+          const w = document.getElementById("sync" + n);
+          const t = document.getElementById("syncT" + n);
+          const b = document.getElementById("syncB" + n);
+          if (!w) return;
+          w.classList.toggle("off", off);
+          b.textContent = off ? "Retry now" : "Go offline";
+          if (off) {
+            t.textContent = state.queued
+              ? "Offline · " +
+                state.queued +
+                " item" +
+                (state.queued > 1 ? "s" : "") +
+                " waiting to sync"
+              : "Offline · saving to this device";
+          } else {
+            t.textContent = "Synced · all work uploaded";
+          }
+        });
+        document.getElementById("netIcon").style.opacity = off ? ".35" : "1";
+      }
+      function queue() {
+        if (!state.online) {
+          state.queued++;
+          paintSync();
+        }
+      }
+
+      /* ════════ CHECK IN ════════ */
+      function checkIn() {
+        if (state.checkedIn) {
+          go("insp");
+          return;
+        }
+        state.checkedIn = true;
+        const b = document.getElementById("ciBtn");
+        b.innerHTML =
+          '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Checked in 08:04 — open checklist';
+        b.classList.add("ok");
+        toast(
+          "Checked in on site",
+          state.online
+            ? "GPS stamped 08:04 · office notified"
+            : "GPS stamped 08:04 · will sync when online",
+        );
+        queue();
+        setTimeout(() => go("insp"), 900);
+      }
+
+      /* ════════ READINGS VALIDATION ════════ */
+      const FIELDS = ["ph", "cl", "tss", "flow", "mlss"];
+      FIELDS.forEach((id) => {
+        const el = document.getElementById(id);
+        el.addEventListener("input", () => {
+          const v = parseFloat(el.value);
+          const msg = document.getElementById(id + "-m");
+          const min = parseFloat(el.dataset.min),
+            max = parseFloat(el.dataset.max);
+
+          if (el.value === "") {
+            el.classList.remove("bad", "good");
+            msg.classList.remove("show");
+            delete state.readings[id];
+          } else if (isNaN(v)) {
+            el.classList.remove("good");
+            el.classList.add("bad");
+            msg.className = "fld-msg bad show";
+            msg.innerHTML = ico("!") + "Enter a number";
+            delete state.readings[id];
+          } else if (v < min || v > max) {
+            el.classList.remove("good");
+            el.classList.add("bad");
+            msg.className = "fld-msg bad show";
+            msg.innerHTML =
+              ico("!") +
+              el.dataset.name +
+              " out of spec — this will flag for follow-up";
+            state.readings[id] = { v: v, ok: false };
+          } else {
+            el.classList.remove("bad");
+            el.classList.add("good");
+            msg.className = "fld-msg good show";
+            msg.innerHTML = ico("v") + "Within spec";
+            state.readings[id] = { v: v, ok: true };
+          }
+          saved();
+          paint();
+        });
+      });
+      function ico(k) {
+        return k === "v"
+          ? '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>'
+          : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+      }
+
+      /* ════════ CONDITION / CHECKLIST / PHOTOS ════════ */
+      function pick(btn, k) {
+        document
+          .querySelectorAll("#seg-cond button")
+          .forEach((b) => b.classList.remove("on"));
+        btn.classList.add("on");
+        state.condition = k;
+        saved();
+        paint();
+      }
+      function tick(el) {
+        el.classList.toggle("on");
+        state.checks = document.querySelectorAll("#ckl .ckl-i.on").length;
+        document.getElementById("ckB").textContent = state.checks + " of 5";
+        saved();
+        paint();
+      }
+      function addPhoto() {
+        state.photos++;
+        document.getElementById("phB").textContent = state.photos + " attached";
+        toast(
+          "Photo attached",
+          state.online
+            ? "Uploading in background"
+            : "Held on device until online",
+        );
+        queue();
+        saved();
+        paint();
+      }
+
+      /* ════════ DRAFT INDICATOR ════════ */
+      let savedTimer;
+      function saved() {
+        const el = document.getElementById("draftT");
+        el.textContent = "Draft saved on this device — " + stamp();
+        clearTimeout(savedTimer);
+        savedTimer = setTimeout(() => {
+          el.textContent =
+            "Draft held on this device — nothing is lost if the app closes";
+        }, 3200);
+      }
+      function stamp() {
+        const d = new Date();
+        return (
+          String(d.getHours()).padStart(2, "0") +
+          ":" +
+          String(d.getMinutes()).padStart(2, "0") +
+          ":" +
+          String(d.getSeconds()).padStart(2, "0")
+        );
+      }
+
+      /* ════════ PROGRESS + GATING ════════ */
+      function paint() {
+        const r = Object.keys(state.readings).length;
+        const done =
+          r + state.checks + (state.condition ? 1 : 0) + (state.signed ? 1 : 0);
+        const total = 12;
+        document.getElementById("progV").textContent =
+          Math.min(done, total) + " of " + total;
+        document.getElementById("progF").style.width =
+          Math.min((done / total) * 100, 100) + "%";
+
+        const out = Object.values(state.readings).filter((x) => !x.ok).length;
+        const sb = document.getElementById("specB");
+        if (r === 0) {
+          sb.textContent = "Enter values";
+          sb.style.color = "";
+        } else if (out) {
+          sb.textContent = out + " out of spec";
+          sb.style.color = "#a13a32";
+        } else {
+          sb.textContent = r + " within spec";
+          sb.style.color = "#137a51";
+        }
+
+        const ready =
+          r >= 3 && state.condition && state.checks >= 3 && state.signed;
+        const btn = document.getElementById("submitBtn");
+        btn.disabled = !ready;
+        document.getElementById("submitTxt").textContent = ready
+          ? "Complete job"
+          : "Complete job — " + missing(r) + " left";
+      }
+      function missing(r) {
+        const need = [];
+        if (r < 3) need.push("readings");
+        if (!state.condition) need.push("status");
+        if (state.checks < 3) need.push("checks");
+        if (!state.signed) need.push("signature");
+        return need.join(", ");
+      }
+
+      /* ════════ SIGNATURE PAD ════════ */
+      const pad = document.getElementById("sigpad");
+      const cv = document.getElementById("sig");
+      let ctx,
+        drawing = false;
+      function sizeCanvas() {
+        const r = cv.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        cv.width = r.width * dpr;
+        cv.height = r.height * dpr;
+        ctx = cv.getContext("2d");
+        ctx.scale(dpr, dpr);
+        ctx.strokeStyle = "#0f2027";
+        ctx.lineWidth = 2.1;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+      }
+      function pos(e) {
+        const r = cv.getBoundingClientRect();
+        const p = e.touches ? e.touches[0] : e;
+        return { x: p.clientX - r.left, y: p.clientY - r.top };
+      }
+      function start(e) {
+        e.preventDefault();
+        if (!ctx) sizeCanvas();
+        drawing = true;
+        const p = pos(e);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        pad.classList.add("inked");
+      }
+      function move(e) {
+        if (!drawing) return;
+        e.preventDefault();
+        const p = pos(e);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+      }
+      function end() {
+        if (!drawing) return;
+        drawing = false;
+        if (!state.signed) {
+          state.signed = true;
+          toast("Signature captured", "Faisal Abdulla · 4 Sep, 09:44");
+          queue();
+          saved();
+          paint();
+        }
+      }
+      pad.addEventListener("mousedown", start);
+      pad.addEventListener("touchstart", start, { passive: false });
+      window.addEventListener("mousemove", move);
+      pad.addEventListener("touchmove", move, { passive: false });
+      window.addEventListener("mouseup", end);
+      pad.addEventListener("touchend", end);
+      function clearSig() {
+        if (ctx) ctx.clearRect(0, 0, cv.width, cv.height);
+        pad.classList.remove("inked");
+        state.signed = false;
+        paint();
+      }
+
+      /* ════════ SUBMIT ════════ */
+      function submitJob() {
+        const out = Object.values(state.readings).filter((x) => !x.ok).length;
+        document.getElementById("doneRead").textContent =
+          Object.keys(state.readings).length + " recorded";
+        document.getElementById("doneOut").textContent = out
+          ? out + " reading out of spec — follow-up job raised"
+          : state.condition === "g"
+            ? "Passed"
+            : state.condition === "a"
+              ? "Passed with observations"
+              : "Critical — escalated";
+        document.getElementById("doneMsg").textContent = state.online
+          ? "PDF generated and emailed to the customer. The office dashboard updated live."
+          : "Held on the device. It uploads by itself the moment you have signal — you can drive off now.";
+        go("done");
+        if (!state.online) queue();
+      }
+
+      /* ════════ INIT ════════ */
+      sizeCanvas();
+      window.addEventListener("resize", () => {
+        const had = pad.classList.contains("inked");
+        sizeCanvas();
+        if (!had) pad.classList.remove("inked");
+      });
+      paintSync();
+      paint();
+    </script>
+  </body>
+</html>

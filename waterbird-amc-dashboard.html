@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Water Bird — AMC Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#114c5f;--tl:#1e88a8;--tp:#eaf4f7;
+  --tx:#0f2027;--mu:#5a6b72;
+  --bd:rgba(17,76,95,.09);--bh:rgba(30,136,168,.28);
+  --sh-sm:0 4px 16px rgba(17,76,95,.08);
+  --sh-md:0 14px 40px rgba(17,76,95,.11);
+  --ok:#1f9d6b;--warn:#c67c1e;--bad:#c0483f;
+  --sbw:246px;
+}
+body{font-family:'Poppins',sans-serif;background:#f0f5f7;color:var(--tx);-webkit-font-smoothing:antialiased}
+
+/* ══════ SIDEBAR ══════ */
+.db-sb{position:fixed;top:0;left:0;bottom:0;width:var(--sbw);background:#070f14;z-index:100;display:flex;flex-direction:column;overflow:hidden;isolation:isolate}
+.db-sb::before{content:"";position:absolute;inset:0;z-index:0;background:radial-gradient(500px 600px at 0% 30%,rgba(17,76,95,.5),transparent 70%)}
+.db-sb::after{content:"";position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(126,212,232,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(126,212,232,.03) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse at 50% 40%,#000 20%,transparent 80%)}
+.db-sb-in{position:relative;z-index:2;display:flex;flex-direction:column;height:100%}
+
+.db-brand{padding:22px 20px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.db-brand-mark{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--teal),var(--tl));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.db-brand-mark svg{width:22px;height:22px;stroke:#fff;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-brand-name{font-family:'Inter',sans-serif;font-size:15px;font-weight:800;color:#fff;letter-spacing:-.3px;line-height:1.1}
+.db-brand-sub{font-family:'Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:rgba(126,212,232,.55);margin-top:3px}
+
+.db-nav{flex:1;overflow-y:auto;padding:16px 12px}
+.db-nav::-webkit-scrollbar{width:0}
+.db-nav-grp{font-family:'Inter',sans-serif;font-size:9px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:rgba(200,220,226,.3);padding:14px 10px 8px}
+.db-nav-grp:first-child{padding-top:0}
+.db-nav a{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:9px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:rgba(200,220,226,.62);text-decoration:none;transition:background .18s,color .18s;position:relative;margin-bottom:1px}
+.db-nav a:hover{background:rgba(255,255,255,.045);color:#fff}
+.db-nav a.active{background:linear-gradient(90deg,rgba(30,136,168,.22),rgba(30,136,168,.06));color:#fff}
+.db-nav a.active::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:#7ed4e8}
+.db-nav a svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.85}
+.db-nav a.active svg{opacity:1;stroke:#7ed4e8}
+.db-nav-pill{margin-left:auto;font-size:10px;font-weight:800;padding:1px 7px;border-radius:9px;background:rgba(192,72,63,.9);color:#fff;font-family:'Inter',sans-serif}
+.db-nav-pill.q{background:rgba(255,255,255,.1);color:rgba(200,220,226,.7)}
+
+.db-sb-foot{padding:14px 16px;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0}
+.db-sb-user{display:flex;align-items:center;gap:10px}
+.db-sb-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--tl),#7ed4e8);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:#070f14;flex-shrink:0}
+.db-sb-user-n{font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;color:#fff;line-height:1.2}
+.db-sb-user-r{font-family:'Inter',sans-serif;font-size:10px;color:rgba(200,220,226,.45);margin-top:2px}
+
+
+/* ══════ NAV: pages not built yet ══════ */
+.db-nav a.db-nav-soon{opacity:.42;cursor:not-allowed}
+.db-nav a.db-nav-soon:hover{background:none;color:rgba(200,220,226,.62)}
+
+/* ══════ SHELL ══════ */
+.db-main{margin-left:var(--sbw);min-height:100vh}
+
+.db-top{background:#fff;border-bottom:1px solid var(--bd);padding:0 26px;height:64px;display:flex;align-items:center;gap:20px;position:sticky;top:0;z-index:90}
+.db-burger{width:36px;height:36px;border-radius:9px;border:1px solid var(--bd);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .2s}
+.db-burger:hover{background:var(--tp)}
+.db-burger svg{width:17px;height:17px;stroke:var(--teal);stroke-width:2;fill:none;stroke-linecap:round}
+.db-crumb{font-family:'Inter',sans-serif;font-size:12px;color:var(--mu);display:flex;align-items:center;gap:7px}
+.db-crumb a{color:var(--mu);text-decoration:none}
+.db-crumb a:hover{color:var(--teal)}
+.db-crumb .sep{color:var(--bd)}
+.db-crumb strong{color:var(--teal);font-weight:700}
+.db-top-r{margin-left:auto;display:flex;align-items:center;gap:10px}
+.db-search{display:flex;align-items:center;gap:8px;background:#f8fbfc;border:1px solid var(--bd);border-radius:9px;padding:8px 13px;width:250px;transition:border-color .2s}
+.db-search:focus-within{border-color:var(--tl)}
+.db-search svg{width:14px;height:14px;stroke:var(--mu);stroke-width:2;fill:none;stroke-linecap:round;flex-shrink:0}
+.db-search input{border:none;background:none;outline:none;font-family:'Poppins',sans-serif;font-size:12.5px;color:var(--tx);width:100%}
+.db-search input::placeholder{color:var(--mu);opacity:.7}
+.db-ico-btn{width:36px;height:36px;border-radius:9px;border:1px solid var(--bd);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:background .2s}
+.db-ico-btn:hover{background:var(--tp)}
+.db-ico-btn svg{width:16px;height:16px;stroke:var(--teal);stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-ico-btn .dot{position:absolute;top:7px;right:8px;width:6px;height:6px;border-radius:50%;background:var(--bad);border:1.5px solid #fff}
+
+.db-body{padding:26px}
+
+/* ══════ PAGE HEAD ══════ */
+.db-ph{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+.db-ph-ey{display:inline-flex;align-items:center;gap:8px;background:var(--tp);border:1px solid rgba(17,76,95,.12);color:var(--teal);font-family:'Inter',sans-serif;font-size:10px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-bottom:11px}
+.db-ph-ey::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--tl)}
+.db-ph h1{font-family:'Inter',sans-serif;font-size:27px;font-weight:600;letter-spacing:-1px;color:var(--tx);line-height:1.1}
+.db-ph h1 em{font-style:normal;color:var(--tl)}
+.db-ph-sub{font-size:13px;color:var(--mu);margin-top:7px}
+.db-ph-act{display:flex;gap:9px;flex-shrink:0}
+.db-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--teal),var(--tl));color:#fff;padding:10px 19px;border-radius:8px;font-family:'Inter',sans-serif;font-size:12.5px;font-weight:800;text-decoration:none;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(17,76,95,.2);transition:transform .2s,box-shadow .2s}
+.db-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(17,76,95,.3)}
+.db-btn svg{width:14px;height:14px;stroke:#fff;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-btn-o{background:#fff;color:var(--teal);border:1px solid var(--bd);box-shadow:none}
+.db-btn-o:hover{background:var(--tp);transform:none;box-shadow:none}
+.db-btn-o svg{stroke:var(--teal)}
+
+/* ══════ KPI ROW ══════ */
+.db-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+.db-kpi{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:20px;position:relative;overflow:hidden;transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s,border-color .25s}
+.db-kpi:hover{transform:translateY(-3px);box-shadow:var(--sh-md);border-color:var(--bh)}
+.db-kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.22,1,.36,1)}
+.db-kpi:hover::before{transform:scaleX(1)}
+.db-kpi.k-due::before{background:linear-gradient(90deg,var(--teal),var(--tl))}
+.db-kpi.k-open::before{background:linear-gradient(90deg,#c67c1e,#e0a martial)}
+.db-kpi.k-open::before{background:linear-gradient(90deg,#c67c1e,#e5b25f)}
+.db-kpi.k-done::before{background:linear-gradient(90deg,#1f9d6b,#4ec795)}
+.db-kpi.k-over::before{background:linear-gradient(90deg,#c0483f,#e07a70)}
+.db-kpi-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:15px}
+.db-kpi-lbl{font-family:'Inter',sans-serif;font-size:10px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--mu);line-height:1.4;max-width:150px}
+.db-kpi-ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .3s}
+.db-kpi:hover .db-kpi-ic{transform:scale(1.08) rotate(-4deg)}
+.db-kpi-ic svg{width:18px;height:18px;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.k-due .db-kpi-ic{background:var(--tp)}.k-due .db-kpi-ic svg{stroke:var(--teal)}
+.k-open .db-kpi-ic{background:rgba(198,124,30,.11)}.k-open .db-kpi-ic svg{stroke:var(--warn)}
+.k-done .db-kpi-ic{background:rgba(31,157,107,.11)}.k-done .db-kpi-ic svg{stroke:var(--ok)}
+.k-over .db-kpi-ic{background:rgba(192,72,63,.1)}.k-over .db-kpi-ic svg{stroke:var(--bad)}
+.db-kpi-n{font-family:'Inter',sans-serif;font-size:33px;font-weight:800;letter-spacing:-1.6px;color:var(--tx);line-height:1}
+.db-kpi-n small{font-size:14px;font-weight:700;color:var(--mu);letter-spacing:0;margin-left:3px}
+.db-kpi-ft{display:flex;align-items:center;gap:6px;margin-top:11px;padding-top:11px;border-top:1px solid var(--bd);font-family:'Inter',sans-serif;font-size:11px;color:var(--mu)}
+.db-trend{display:inline-flex;align-items:center;gap:3px;font-weight:800;font-size:11px}
+.db-trend svg{width:11px;height:11px;stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-trend.up{color:var(--ok)}.db-trend.up svg{stroke:var(--ok)}
+.db-trend.dn{color:var(--bad)}.db-trend.dn svg{stroke:var(--bad)}
+.db-trend.fl{color:var(--mu)}.db-trend.fl svg{stroke:var(--mu)}
+
+/* ══════ SECONDARY STRIP ══════ */
+.db-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
+.db-mini{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:15px 17px;display:flex;align-items:center;gap:13px;transition:border-color .25s,box-shadow .3s}
+.db-mini:hover{border-color:var(--bh);box-shadow:var(--sh-sm)}
+.db-mini-ic{width:34px;height:34px;border-radius:9px;background:var(--tp);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.db-mini-ic svg{width:16px;height:16px;stroke:var(--teal);stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-mini-n{font-family:'Inter',sans-serif;font-size:19px;font-weight:800;color:var(--tx);letter-spacing:-.7px;line-height:1}
+.db-mini-l{font-family:'Inter',sans-serif;font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--mu);margin-top:4px}
+
+/* ══════ GRID ══════ */
+.db-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.db-grid-3{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+
+/* ══════ PANEL ══════ */
+.db-panel{background:#fff;border:1px solid var(--bd);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.db-panel-hd{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.db-panel-ey{font-family:'Inter',sans-serif;font-size:9px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:var(--tl);margin-bottom:4px}
+.db-panel-hd h2{font-family:'Inter',sans-serif;font-size:16px;font-weight:700;letter-spacing:-.35px;color:var(--tx);line-height:1.2}
+.db-panel-hd-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+.db-link{display:inline-flex;align-items:center;gap:5px;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:800;color:var(--teal);text-decoration:none;border-bottom:1.5px solid transparent;transition:border-color .2s,gap .2s}
+.db-link:hover{color:var(--tl);border-color:var(--tl);gap:8px}
+.db-link svg{width:11px;height:11px;stroke:currentColor;stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.db-link:hover svg{transform:translateX(2px)}
+.db-seg{display:flex;background:#f8fbfc;border:1px solid var(--bd);border-radius:8px;padding:2px;gap:2px}
+.db-seg button{border:none;background:none;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--mu);padding:5px 11px;border-radius:6px;cursor:pointer;transition:background .2s,color .2s}
+.db-seg button.on{background:var(--teal);color:#fff}
+.db-seg button:not(.on):hover{color:var(--teal)}
+.db-panel-bd{padding:20px;flex:1}
+.db-panel-bd.flush{padding:0}
+
+/* ══════ TABLE ══════ */
+.db-tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.db-tbl{width:100%;border-collapse:collapse;min-width:880px}
+.db-tbl thead th{background:#f8fbfc;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;color:var(--mu);text-align:left;padding:11px 20px;white-space:nowrap;border-bottom:1px solid var(--bd)}
+.db-tbl tbody td{padding:13px 20px;font-size:13px;color:var(--mu);border-bottom:1px solid var(--bd);vertical-align:middle;white-space:nowrap}
+.db-tbl tbody tr{transition:background .15s;cursor:pointer}
+.db-tbl tbody tr:hover{background:var(--tp)}
+.db-tbl tbody tr:last-child td{border-bottom:none}
+.db-ref{font-family:'Inter',sans-serif;font-weight:800;font-size:12px;color:var(--teal)}
+.db-cell-2{display:flex;flex-direction:column;gap:2px}
+.db-cell-2 strong{font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;color:var(--tx)}
+.db-cell-2 span{font-size:11px;color:var(--mu)}
+.db-asset{display:inline-flex;align-items:center;gap:6px;background:var(--tp);border:1px solid rgba(17,76,95,.09);border-radius:5px;padding:3px 9px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--teal)}
+.db-eng{display:flex;align-items:center;gap:8px}
+.db-eng-av{width:27px;height:27px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--tl));display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;color:#fff;flex-shrink:0}
+.db-eng span{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--tx)}
+.db-chip{display:inline-flex;align-items:center;gap:5px;font-family:'Inter',sans-serif;font-size:10.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.db-chip::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.db-chip.s-prog{background:rgba(30,136,168,.1);color:#166b85}
+.db-chip.s-open{background:rgba(198,124,30,.11);color:#9e5f10}
+.db-chip.s-done{background:rgba(31,157,107,.11);color:#137a51}
+.db-chip.s-over{background:rgba(192,72,63,.1);color:#a13a32}
+.db-chip.s-sched{background:rgba(17,76,95,.07);color:var(--mu)}
+
+/* ══════ CHARTS ══════ */
+.db-chart-mt{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.db-chart-n{font-family:'Inter',sans-serif;font-size:27px;font-weight:800;letter-spacing:-1.2px;color:var(--tx);line-height:1}
+.db-chart-cap{font-size:11.5px;color:var(--mu)}
+.db-chart-svg{width:100%;height:auto;display:block;overflow:visible}
+.db-lg{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--bd)}
+.db-lg-i{display:flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:var(--mu)}
+.db-lg-sw{width:11px;height:11px;border-radius:3px;flex-shrink:0}
+
+/* ══════ BAR LIST ══════ */
+.db-bl{display:flex;flex-direction:column;gap:15px}
+.db-bl-i{display:flex;flex-direction:column;gap:7px}
+.db-bl-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.db-bl-lbl{font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;color:var(--tx)}
+.db-bl-v{font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:var(--teal)}
+.db-bl-v small{font-weight:600;color:var(--mu);font-size:11px}
+.db-bl-tr{height:7px;background:#eef4f6;border-radius:4px;overflow:hidden}
+.db-bl-fl{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--teal),var(--tl))}
+
+/* ══════ ENGINEER LIST ══════ */
+.db-el{display:flex;flex-direction:column}
+.db-el-i{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:13px 20px;border-bottom:1px solid var(--bd);transition:background .15s}
+.db-el-i:last-child{border-bottom:none}
+.db-el-i:hover{background:var(--tp)}
+.db-el-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--tl));display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;position:relative}
+.db-el-av::after{content:"";position:absolute;bottom:-1px;right:-1px;width:11px;height:11px;border-radius:50%;border:2px solid #fff}
+.db-el-av.on::after{background:var(--ok)}
+.db-el-av.busy::after{background:var(--warn)}
+.db-el-av.off::after{background:#b9c6cb}
+.db-el-n{font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:var(--tx)}
+.db-el-m{font-size:11px;color:var(--mu);margin-top:2px}
+.db-el-r{text-align:right;flex-shrink:0}
+.db-el-c{font-family:'Inter',sans-serif;font-size:15px;font-weight:800;color:var(--teal);line-height:1}
+.db-el-cl{font-family:'Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--mu);margin-top:3px}
+
+/* ══════ RENEWALS ══════ */
+.db-rn{display:flex;flex-direction:column}
+.db-rn-i{padding:14px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:13px;transition:background .15s}
+.db-rn-i:last-child{border-bottom:none}
+.db-rn-i:hover{background:var(--tp)}
+.db-rn-d{width:44px;flex-shrink:0;text-align:center;background:var(--tp);border-radius:9px;padding:7px 0}
+.db-rn-dd{font-family:'Inter',sans-serif;font-size:16px;font-weight:800;color:var(--teal);line-height:1}
+.db-rn-dm{font-family:'Inter',sans-serif;font-size:9px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--mu);margin-top:2px}
+.db-rn-b{flex:1;min-width:0}
+.db-rn-n{font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.db-rn-m{font-size:11px;color:var(--mu);margin-top:3px}
+.db-rn-v{font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:var(--teal);flex-shrink:0}
+
+/* ══════ ALERT ══════ */
+.db-alert{background:#fff;border:1px solid rgba(192,72,63,.2);border-left:4px solid var(--bad);border-radius:0 12px 12px 0;padding:14px 18px;display:flex;align-items:center;gap:13px;margin-bottom:20px}
+.db-alert-ic{width:34px;height:34px;border-radius:9px;background:rgba(192,72,63,.09);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.db-alert-ic svg{width:17px;height:17px;stroke:var(--bad);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-alert-t{font-family:'Inter',sans-serif;font-size:13px;font-weight:800;color:var(--tx)}
+.db-alert-s{font-size:12px;color:var(--mu);margin-top:2px}
+.db-alert a{margin-left:auto;flex-shrink:0}
+
+/* ══════ RESPONSIVE ══════ */
+@media(max-width:1400px){
+  .db-kpis{grid-template-columns:repeat(2,1fr)}
+  .db-strip{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:1160px){
+  :root{--sbw:0px}
+  .db-sb{transform:translateX(-100%);transition:transform .3s}
+  .db-sb.open{transform:none;width:246px}
+  .db-main{margin-left:0}
+  .db-grid,.db-grid-3{grid-template-columns:1fr}
+  .db-search{width:180px}
+}
+@media(max-width:760px){
+  .db-kpis{grid-template-columns:1fr}
+  .db-strip{grid-template-columns:1fr 1fr}
+  .db-body{padding:18px}
+  .db-top{padding:0 18px}
+  .db-search{display:none}
+  .db-ph-act{width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<aside class="db-sb" id="sb">
+<div class="db-sb-in">
+  <div class="db-brand">
+    <div class="db-brand-mark">
+      <svg viewBox="0 0 24 24"><path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0c0-4.5-7-13-7-13z"/><circle cx="12" cy="15" r="2.5"/></svg>
+    </div>
+    <div>
+      <div class="db-brand-name">Water Bird</div>
+      <div class="db-brand-sub">AMC Platform</div>
+    </div>
+  </div>
+
+  <nav class="db-nav">
+    <div class="db-nav-grp">Overview</div>
+    <a href="waterbird-amc-dashboard.html" class="active"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg> Dashboard</a>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Reports</a>
+
+    <div class="db-nav-grp">Contracts</div>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> AMC Contracts <span class="db-nav-pill q">312</span></a>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.2-8.6"/><polyline points="21 3 21 9 15 9"/></svg> Renewals <span class="db-nav-pill">18</span></a>
+
+    <div class="db-nav-grp">Field Operations</div>
+    <a href="waterbird-visit-schedule-page.html"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Visit Schedule</a>
+    <a href="waterbird-work-orders-page.html"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> Work Orders <span class="db-nav-pill">7</span></a>
+    <a href="waterbird-inspections-page.html"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Inspections</a>
+    <a href="waterbird-engineers-page.html"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Engineers</a>
+
+    <div class="db-nav-grp">Assets &amp; Sites</div>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Customers</a>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Sites</a>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3S3 13.66 3 12"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg> Assets</a>
+
+    <div class="db-nav-grp">Inventory</div>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v7l-4 8h12l-4-8V3"/><line x1="6" y1="16" x2="18" y2="16"/></svg> Chemicals</a>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/></svg> Spares &amp; Consumables</a>
+  </nav>
+
+  <div class="db-sb-foot">
+    <div class="db-sb-user">
+      <div class="db-sb-av">RB</div>
+      <div>
+        <div class="db-sb-user-n">Renjish Basheer</div>
+        <div class="db-sb-user-r">Service Manager</div>
+      </div>
+    </div>
+  </div>
+</div>
+</aside>
+
+<!-- ══════════ MAIN ══════════ -->
+<div class="db-main">
+
+  <header class="db-top">
+    <button class="db-burger" onclick="document.getElementById('sb').classList.toggle('open')" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="db-crumb"><a href="waterbird-amc-dashboard.html">Home</a><span class="sep">/</span><strong>Dashboard</strong></div>
+    <div class="db-top-r">
+      <div class="db-search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" placeholder="Search contracts, sites, assets…">
+      </div>
+      <button class="db-ico-btn" aria-label="Notifications"><span class="dot"></span><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+      <button class="db-ico-btn" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6h.09A1.65 1.65 0 0 0 10 3.09V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+    </div>
+  </header>
+
+  <div class="db-body">
+
+    <!-- Page head -->
+    <div class="db-ph">
+      <div>
+        <span class="db-ph-ey">Service Operations</span>
+        <h1>AMC <em>Overview</em></h1>
+        <p class="db-ph-sub">Friday, 4 September 2026 &middot; 312 active contracts across 9 emirates and cities</p>
+      </div>
+      <div class="db-ph-act">
+        <button class="db-btn db-btn-o"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export</button>
+        <button class="db-btn"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Schedule Visit</button>
+      </div>
+    </div>
+
+    <!-- Overdue alert -->
+    <div class="db-alert">
+      <div class="db-alert-ic"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+      <div>
+        <div class="db-alert-t">7 visits are past their scheduled date</div>
+        <div class="db-alert-s">Oldest is 11 days overdue &mdash; Jebel Ali Free Zone, ETP 400 KLD. SLA breach risk on 3 contracts.</div>
+      </div>
+      <a href="waterbird-work-orders-page.html" class="db-link">Review overdue <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+
+    <!-- KPI row -->
+    <div class="db-kpis">
+      <div class="db-kpi k-due">
+        <div class="db-kpi-top">
+          <div class="db-kpi-lbl">Visits Due This Month</div>
+          <div class="db-kpi-ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        </div>
+        <div class="db-kpi-n">284</div>
+        <div class="db-kpi-ft"><span class="db-trend up"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>12</span> vs August</div>
+      </div>
+
+      <div class="db-kpi k-open">
+        <div class="db-kpi-top">
+          <div class="db-kpi-lbl">Open Work Orders</div>
+          <div class="db-kpi-ic"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+        </div>
+        <div class="db-kpi-n">41</div>
+        <div class="db-kpi-ft"><span class="db-trend dn"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>6</span> since Monday</div>
+      </div>
+
+      <div class="db-kpi k-done">
+        <div class="db-kpi-top">
+          <div class="db-kpi-lbl">Completed This Month</div>
+          <div class="db-kpi-ic"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        </div>
+        <div class="db-kpi-n">236<small>/ 284</small></div>
+        <div class="db-kpi-ft"><span class="db-trend up"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>83%</span> completion rate</div>
+      </div>
+
+      <div class="db-kpi k-over">
+        <div class="db-kpi-top">
+          <div class="db-kpi-lbl">Overdue Visits</div>
+          <div class="db-kpi-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        </div>
+        <div class="db-kpi-n">7</div>
+        <div class="db-kpi-ft"><span class="db-trend dn"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>2</span> vs yesterday</div>
+      </div>
+    </div>
+
+    <!-- Secondary strip -->
+    <div class="db-strip">
+      <div class="db-mini">
+        <div class="db-mini-ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div><div class="db-mini-n">312</div><div class="db-mini-l">Active Contracts</div></div>
+      </div>
+      <div class="db-mini">
+        <div class="db-mini-ic"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div><div class="db-mini-n">187</div><div class="db-mini-l">Customers</div></div>
+      </div>
+      <div class="db-mini">
+        <div class="db-mini-ic"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3S3 13.66 3 12"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg></div>
+        <div><div class="db-mini-n">846</div><div class="db-mini-l">Assets Covered</div></div>
+      </div>
+      <div class="db-mini">
+        <div class="db-mini-ic"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div><div class="db-mini-n">24</div><div class="db-mini-l">Field Engineers</div></div>
+      </div>
+      <div class="db-mini">
+        <div class="db-mini-ic"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.2-8.6"/><polyline points="21 3 21 9 15 9"/></svg></div>
+        <div><div class="db-mini-n">18</div><div class="db-mini-l">Renewals in 60 Days</div></div>
+      </div>
+    </div>
+
+    <!-- Today's schedule -->
+    <div class="db-panel" style="margin-bottom:16px">
+      <div class="db-panel-hd">
+        <div>
+          <div class="db-panel-ey">Field Operations</div>
+          <h2>Today&rsquo;s Schedule</h2>
+        </div>
+        <div class="db-panel-hd-r">
+          <div class="db-seg">
+            <button class="on">Today</button>
+            <button>This Week</button>
+            <button>Overdue</button>
+          </div>
+          <a href="waterbird-visit-schedule-page.html" class="db-link">View all <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+        </div>
+      </div>
+      <div class="db-panel-bd flush">
+        <div class="db-tw">
+          <table class="db-tbl">
+            <thead>
+              <tr>
+                <th>Work Order</th><th>Customer &amp; Site</th><th>Asset</th>
+                <th>Frequency</th><th>Scheduled</th><th>Engineer</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="db-ref">WO-8412</span></td>
+                <td><div class="db-cell-2"><strong>Emirates Pearl Hotel</strong><span>Al Barsha, Dubai</span></div></td>
+                <td><span class="db-asset">STP 250 KLD</span></td>
+                <td>Monthly</td>
+                <td>08:00 AM</td>
+                <td><div class="db-eng"><div class="db-eng-av">RK</div><span>Rajesh Kumar</span></div></td>
+                <td><span class="db-chip s-done">Completed</span></td>
+              </tr>
+              <tr>
+                <td><span class="db-ref">WO-8413</span></td>
+                <td><div class="db-cell-2"><strong>Al Quoz Industrial Park</strong><span>Al Quoz 4, Dubai</span></div></td>
+                <td><span class="db-asset">ETP 400 KLD</span></td>
+                <td>Monthly</td>
+                <td>09:15 AM</td>
+                <td><div class="db-eng"><div class="db-eng-av">MA</div><span>Mohammed Ashraf</span></div></td>
+                <td><span class="db-chip s-prog">In Progress</span></td>
+              </tr>
+              <tr>
+                <td><span class="db-ref">WO-8414</span></td>
+                <td><div class="db-cell-2"><strong>Marina Heights Tower</strong><span>Dubai Marina</span></div></td>
+                <td><span class="db-asset">Booster Pump Set</span></td>
+                <td>Quarterly</td>
+                <td>10:30 AM</td>
+                <td><div class="db-eng"><div class="db-eng-av">SP</div><span>Suresh Pillai</span></div></td>
+                <td><span class="db-chip s-prog">In Progress</span></td>
+              </tr>
+              <tr>
+                <td><span class="db-ref">WO-8415</span></td>
+                <td><div class="db-cell-2"><strong>Jebel Ali Free Zone</strong><span>JAFZA South, Dubai</span></div></td>
+                <td><span class="db-asset">Cooling Tower Dosing</span></td>
+                <td>Monthly</td>
+                <td>11:00 AM</td>
+                <td><div class="db-eng"><div class="db-eng-av">AV</div><span>Anil Varghese</span></div></td>
+                <td><span class="db-chip s-open">Assigned</span></td>
+              </tr>
+              <tr>
+                <td><span class="db-ref">WO-8416</span></td>
+                <td><div class="db-cell-2"><strong>Yas Island Resort</strong><span>Yas Island, Abu Dhabi</span></div></td>
+                <td><span class="db-asset">TSE Polishing Plant</span></td>
+                <td>Quarterly</td>
+                <td>01:00 PM</td>
+                <td><div class="db-eng"><div class="db-eng-av">FH</div><span>Faisal Hameed</span></div></td>
+                <td><span class="db-chip s-sched">Scheduled</span></td>
+              </tr>
+              <tr>
+                <td><span class="db-ref">WO-8398</span></td>
+                <td><div class="db-cell-2"><strong>Sharjah Labour Village</strong><span>Industrial Area 12, Sharjah</span></div></td>
+                <td><span class="db-asset">STP 500 KLD</span></td>
+                <td>Monthly</td>
+                <td>24 Aug 2026</td>
+                <td><div class="db-eng"><div class="db-eng-av">MA</div><span>Mohammed Ashraf</span></div></td>
+                <td><span class="db-chip s-over">11 Days Overdue</span></td>
+              </tr>
+              <tr>
+                <td><span class="db-ref">WO-8417</span></td>
+                <td><div class="db-cell-2"><strong>Deira City Centre</strong><span>Deira, Dubai</span></div></td>
+                <td><span class="db-asset">Grey Water System</span></td>
+                <td>Bi-Monthly</td>
+                <td>03:30 PM</td>
+                <td><div class="db-eng"><div class="db-eng-av">RK</div><span>Rajesh Kumar</span></div></td>
+                <td><span class="db-chip s-sched">Scheduled</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts row -->
+    <div class="db-grid">
+
+      <div class="db-panel">
+        <div class="db-panel-hd">
+          <div>
+            <div class="db-panel-ey">Performance</div>
+            <h2>Visit Completion Trend</h2>
+          </div>
+          <div class="db-panel-hd-r">
+            <div class="db-seg"><button>6M</button><button class="on">12M</button></div>
+          </div>
+        </div>
+        <div class="db-panel-bd">
+          <div class="db-chart-mt">
+            <div class="db-chart-n">83%</div>
+            <div class="db-chart-cap">average completion rate &middot; up from 71% in Oct 2025</div>
+          </div>
+          <svg class="db-chart-svg" viewBox="0 0 640 230" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="gArea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1e88a8" stop-opacity=".28"/>
+                <stop offset="100%" stop-color="#1e88a8" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="gLine" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#114c5f"/><stop offset="100%" stop-color="#1e88a8"/>
+              </linearGradient>
+            </defs>
+            <!-- grid -->
+            <g stroke="rgba(17,76,95,.07)" stroke-width="1">
+              <line x1="44" y1="20" x2="628" y2="20"/><line x1="44" y1="62" x2="628" y2="62"/>
+              <line x1="44" y1="104" x2="628" y2="104"/><line x1="44" y1="146" x2="628" y2="146"/>
+              <line x1="44" y1="188" x2="628" y2="188"/>
+            </g>
+            <!-- y labels -->
+            <g font-family="Inter,sans-serif" font-size="10" font-weight="600" fill="#5a6b72">
+              <text x="34" y="24" text-anchor="end">100%</text><text x="34" y="66" text-anchor="end">90%</text>
+              <text x="34" y="108" text-anchor="end">80%</text><text x="34" y="150" text-anchor="end">70%</text>
+              <text x="34" y="192" text-anchor="end">60%</text>
+            </g>
+            <!-- area + line: Sep25→Aug26 -->
+            <path d="M62 150 L113 138 L164 155 L215 130 L266 118 L317 108 L368 96 L419 104 L470 84 L521 72 L572 66 L618 50 L618 188 L62 188 Z" fill="url(#gArea)"/>
+            <path d="M62 150 L113 138 L164 155 L215 130 L266 118 L317 108 L368 96 L419 104 L470 84 L521 72 L572 66 L618 50"
+                  fill="none" stroke="url(#gLine)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- points -->
+            <g fill="#fff" stroke="#1e88a8" stroke-width="2.5">
+              <circle cx="62" cy="150" r="3.5"/><circle cx="164" cy="155" r="3.5"/><circle cx="266" cy="118" r="3.5"/>
+              <circle cx="368" cy="96" r="3.5"/><circle cx="470" cy="84" r="3.5"/><circle cx="572" cy="66" r="3.5"/>
+            </g>
+            <circle cx="618" cy="50" r="5" fill="#114c5f" stroke="#fff" stroke-width="2.5"/>
+            <!-- x labels -->
+            <g font-family="Inter,sans-serif" font-size="10" font-weight="600" fill="#5a6b72" text-anchor="middle">
+              <text x="62" y="212">Sep</text><text x="113" y="212">Oct</text><text x="164" y="212">Nov</text>
+              <text x="215" y="212">Dec</text><text x="266" y="212">Jan</text><text x="317" y="212">Feb</text>
+              <text x="368" y="212">Mar</text><text x="419" y="212">Apr</text><text x="470" y="212">May</text>
+              <text x="521" y="212">Jun</text><text x="572" y="212">Jul</text><text x="618" y="212">Aug</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="db-panel">
+        <div class="db-panel-hd">
+          <div>
+            <div class="db-panel-ey">Workload</div>
+            <h2>Visits by Asset Type</h2>
+          </div>
+          <div class="db-panel-hd-r">
+            <a href="waterbird-work-orders-page.html" class="db-link">Breakdown <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          </div>
+        </div>
+        <div class="db-panel-bd">
+          <div class="db-chart-mt">
+            <div class="db-chart-n">284</div>
+            <div class="db-chart-cap">visits scheduled in September 2026</div>
+          </div>
+          <svg class="db-chart-svg" viewBox="0 0 640 230" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="gBar" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1e88a8"/><stop offset="100%" stop-color="#114c5f"/>
+              </linearGradient>
+            </defs>
+            <g stroke="rgba(17,76,95,.07)" stroke-width="1">
+              <line x1="44" y1="20" x2="628" y2="20"/><line x1="44" y1="62" x2="628" y2="62"/>
+              <line x1="44" y1="104" x2="628" y2="104"/><line x1="44" y1="146" x2="628" y2="146"/>
+              <line x1="44" y1="188" x2="628" y2="188"/>
+            </g>
+            <g font-family="Inter,sans-serif" font-size="10" font-weight="600" fill="#5a6b72">
+              <text x="34" y="24" text-anchor="end">80</text><text x="34" y="66" text-anchor="end">60</text>
+              <text x="34" y="108" text-anchor="end">40</text><text x="34" y="150" text-anchor="end">20</text>
+              <text x="34" y="192" text-anchor="end">0</text>
+            </g>
+            <g fill="url(#gBar)">
+              <rect x="62" y="41" width="54" height="147" rx="6"/>
+              <rect x="150" y="83" width="54" height="105" rx="6"/>
+              <rect x="238" y="104" width="54" height="84" rx="6"/>
+              <rect x="326" y="125" width="54" height="63" rx="6"/>
+              <rect x="414" y="141" width="54" height="47" rx="6"/>
+              <rect x="502" y="158" width="54" height="30" rx="6"/>
+            </g>
+            <g font-family="Inter,sans-serif" font-size="11" font-weight="800" fill="#114c5f" text-anchor="middle">
+              <text x="89" y="33">70</text><text x="177" y="75">50</text><text x="265" y="96">40</text>
+              <text x="353" y="117">30</text><text x="441" y="133">22</text><text x="529" y="150">14</text>
+            </g>
+            <g font-family="Inter,sans-serif" font-size="10" font-weight="600" fill="#5a6b72" text-anchor="middle">
+              <text x="89" y="208">STP</text><text x="177" y="208">Dosing</text><text x="265" y="208">Pumps</text>
+              <text x="353" y="208">ETP</text><text x="441" y="208">RO / TSE</text><text x="529" y="208">Cooling</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom row -->
+    <div class="db-grid-3">
+
+      <div class="db-panel">
+        <div class="db-panel-hd">
+          <div>
+            <div class="db-panel-ey">Team</div>
+            <h2>Engineer Load Today</h2>
+          </div>
+          <div class="db-panel-hd-r">
+            <a href="waterbird-engineers-page.html" class="db-link">Manage team <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          </div>
+        </div>
+        <div class="db-panel-bd flush">
+          <div class="db-el">
+            <div class="db-el-i">
+              <div class="db-el-av on">RK</div>
+              <div><div class="db-el-n">Rajesh Kumar</div><div class="db-el-m">On site &middot; Emirates Pearl Hotel, Al Barsha</div></div>
+              <div class="db-el-r"><div class="db-el-c">4</div><div class="db-el-cl">Jobs</div></div>
+            </div>
+            <div class="db-el-i">
+              <div class="db-el-av busy">MA</div>
+              <div><div class="db-el-n">Mohammed Ashraf</div><div class="db-el-m">In progress &middot; Al Quoz Industrial Park</div></div>
+              <div class="db-el-r"><div class="db-el-c">5</div><div class="db-el-cl">Jobs</div></div>
+            </div>
+            <div class="db-el-i">
+              <div class="db-el-av on">SP</div>
+              <div><div class="db-el-n">Suresh Pillai</div><div class="db-el-m">On site &middot; Marina Heights Tower</div></div>
+              <div class="db-el-r"><div class="db-el-c">3</div><div class="db-el-cl">Jobs</div></div>
+            </div>
+            <div class="db-el-i">
+              <div class="db-el-av on">AV</div>
+              <div><div class="db-el-n">Anil Varghese</div><div class="db-el-m">In transit &middot; heading to JAFZA South</div></div>
+              <div class="db-el-r"><div class="db-el-c">4</div><div class="db-el-cl">Jobs</div></div>
+            </div>
+            <div class="db-el-i">
+              <div class="db-el-av busy">FH</div>
+              <div><div class="db-el-n">Faisal Hameed</div><div class="db-el-m">Abu Dhabi route &middot; 2 sites remaining</div></div>
+              <div class="db-el-r"><div class="db-el-c">3</div><div class="db-el-cl">Jobs</div></div>
+            </div>
+            <div class="db-el-i">
+              <div class="db-el-av off">NK</div>
+              <div><div class="db-el-n">Nithin Kurian</div><div class="db-el-m">Off duty &middot; leave until 07 Sep</div></div>
+              <div class="db-el-r"><div class="db-el-c">0</div><div class="db-el-cl">Jobs</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="db-panel">
+        <div class="db-panel-hd">
+          <div>
+            <div class="db-panel-ey">Contracts</div>
+            <h2>Upcoming Renewals</h2>
+          </div>
+        </div>
+        <div class="db-panel-bd flush">
+          <div class="db-rn">
+            <div class="db-rn-i">
+              <div class="db-rn-d"><div class="db-rn-dd">14</div><div class="db-rn-dm">Sep</div></div>
+              <div class="db-rn-b"><div class="db-rn-n">Marina Heights Tower</div><div class="db-rn-m">Booster set &middot; 12 months</div></div>
+              <div class="db-rn-v">42K</div>
+            </div>
+            <div class="db-rn-i">
+              <div class="db-rn-d"><div class="db-rn-dd">22</div><div class="db-rn-dm">Sep</div></div>
+              <div class="db-rn-b"><div class="db-rn-n">Deira City Centre</div><div class="db-rn-m">Grey water &middot; 24 months</div></div>
+              <div class="db-rn-v">96K</div>
+            </div>
+            <div class="db-rn-i">
+              <div class="db-rn-d"><div class="db-rn-dd">01</div><div class="db-rn-dm">Oct</div></div>
+              <div class="db-rn-b"><div class="db-rn-n">Yas Island Resort</div><div class="db-rn-m">TSE polishing &middot; 12 months</div></div>
+              <div class="db-rn-v">128K</div>
+            </div>
+            <div class="db-rn-i">
+              <div class="db-rn-d"><div class="db-rn-dd">09</div><div class="db-rn-dm">Oct</div></div>
+              <div class="db-rn-b"><div class="db-rn-n">Sharjah Labour Village</div><div class="db-rn-m">STP 500 KLD &middot; 12 months</div></div>
+              <div class="db-rn-v">74K</div>
+            </div>
+            <div class="db-rn-i">
+              <div class="db-rn-d"><div class="db-rn-dd">18</div><div class="db-rn-dm">Oct</div></div>
+              <div class="db-rn-b"><div class="db-rn-n">Al Quoz Industrial Park</div><div class="db-rn-m">ETP 400 KLD &middot; 12 months</div></div>
+              <div class="db-rn-v">154K</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Coverage -->
+    <div class="db-panel">
+      <div class="db-panel-hd">
+        <div>
+          <div class="db-panel-ey">Coverage</div>
+          <h2>Contracts by Emirate</h2>
+        </div>
+        <div class="db-panel-hd-r">
+          <a href="#" class="db-link">Regional report <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+        </div>
+      </div>
+      <div class="db-panel-bd">
+        <div class="db-bl">
+          <div class="db-bl-i">
+            <div class="db-bl-top"><span class="db-bl-lbl">Dubai</span><span class="db-bl-v">148 <small>contracts</small></span></div>
+            <div class="db-bl-tr"><div class="db-bl-fl" style="width:100%"></div></div>
+          </div>
+          <div class="db-bl-i">
+            <div class="db-bl-top"><span class="db-bl-lbl">Abu Dhabi</span><span class="db-bl-v">71 <small>contracts</small></span></div>
+            <div class="db-bl-tr"><div class="db-bl-fl" style="width:48%"></div></div>
+          </div>
+          <div class="db-bl-i">
+            <div class="db-bl-top"><span class="db-bl-lbl">Sharjah</span><span class="db-bl-v">44 <small>contracts</small></span></div>
+            <div class="db-bl-tr"><div class="db-bl-fl" style="width:30%"></div></div>
+          </div>
+          <div class="db-bl-i">
+            <div class="db-bl-top"><span class="db-bl-lbl">Ajman &amp; Umm Al Quwain</span><span class="db-bl-v">28 <small>contracts</small></span></div>
+            <div class="db-bl-tr"><div class="db-bl-fl" style="width:19%"></div></div>
+          </div>
+          <div class="db-bl-i">
+            <div class="db-bl-top"><span class="db-bl-lbl">Ras Al Khaimah &amp; Fujairah</span><span class="db-bl-v">21 <small>contracts</small></span></div>
+            <div class="db-bl-tr"><div class="db-bl-fl" style="width:14%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

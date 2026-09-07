@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Water Bird — Visit Schedule</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#114c5f;--tl:#1e88a8;--tp:#eaf4f7;
+  --tx:#0f2027;--mu:#5a6b72;
+  --bd:rgba(17,76,95,.09);--bh:rgba(30,136,168,.28);
+  --sh-sm:0 4px 16px rgba(17,76,95,.08);
+  --sh-md:0 14px 40px rgba(17,76,95,.11);
+  --ok:#1f9d6b;--warn:#c67c1e;--bad:#c0483f;
+  --sbw:246px;
+}
+body{font-family:'Poppins',sans-serif;background:#f0f5f7;color:var(--tx);-webkit-font-smoothing:antialiased}
+
+/* ══════ SIDEBAR ══════ */
+.db-sb{position:fixed;top:0;left:0;bottom:0;width:var(--sbw);background:#070f14;z-index:100;display:flex;flex-direction:column;overflow:hidden;isolation:isolate}
+.db-sb::before{content:"";position:absolute;inset:0;z-index:0;background:radial-gradient(500px 600px at 0% 30%,rgba(17,76,95,.5),transparent 70%)}
+.db-sb::after{content:"";position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(126,212,232,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(126,212,232,.03) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse at 50% 40%,#000 20%,transparent 80%)}
+.db-sb-in{position:relative;z-index:2;display:flex;flex-direction:column;height:100%}
+
+.db-brand{padding:22px 20px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.db-brand-mark{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--teal),var(--tl));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.db-brand-mark svg{width:22px;height:22px;stroke:#fff;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-brand-name{font-family:'Inter',sans-serif;font-size:15px;font-weight:800;color:#fff;letter-spacing:-.3px;line-height:1.1}
+.db-brand-sub{font-family:'Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:rgba(126,212,232,.55);margin-top:3px}
+
+.db-nav{flex:1;overflow-y:auto;padding:16px 12px}
+.db-nav::-webkit-scrollbar{width:0}
+.db-nav-grp{font-family:'Inter',sans-serif;font-size:9px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:rgba(200,220,226,.3);padding:14px 10px 8px}
+.db-nav-grp:first-child{padding-top:0}
+.db-nav a{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:9px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:rgba(200,220,226,.62);text-decoration:none;transition:background .18s,color .18s;position:relative;margin-bottom:1px}
+.db-nav a:hover{background:rgba(255,255,255,.045);color:#fff}
+.db-nav a.active{background:linear-gradient(90deg,rgba(30,136,168,.22),rgba(30,136,168,.06));color:#fff}
+.db-nav a.active::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:#7ed4e8}
+.db-nav a svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.85}
+.db-nav a.active svg{opacity:1;stroke:#7ed4e8}
+.db-nav-pill{margin-left:auto;font-size:10px;font-weight:800;padding:1px 7px;border-radius:9px;background:rgba(192,72,63,.9);color:#fff;font-family:'Inter',sans-serif}
+.db-nav-pill.q{background:rgba(255,255,255,.1);color:rgba(200,220,226,.7)}
+
+.db-sb-foot{padding:14px 16px;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0}
+.db-sb-user{display:flex;align-items:center;gap:10px}
+.db-sb-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--tl),#7ed4e8);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:#070f14;flex-shrink:0}
+.db-sb-user-n{font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;color:#fff;line-height:1.2}
+.db-sb-user-r{font-family:'Inter',sans-serif;font-size:10px;color:rgba(200,220,226,.45);margin-top:2px}
+
+
+/* ══════ NAV: pages not built yet ══════ */
+.db-nav a.db-nav-soon{opacity:.42;cursor:not-allowed}
+.db-nav a.db-nav-soon:hover{background:none;color:rgba(200,220,226,.62)}
+
+/* ══════ SHELL ══════ */
+.db-main{margin-left:var(--sbw);min-height:100vh}
+
+.db-top{background:#fff;border-bottom:1px solid var(--bd);padding:0 26px;height:64px;display:flex;align-items:center;gap:20px;position:sticky;top:0;z-index:90}
+.db-burger{width:36px;height:36px;border-radius:9px;border:1px solid var(--bd);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .2s}
+.db-burger:hover{background:var(--tp)}
+.db-burger svg{width:17px;height:17px;stroke:var(--teal);stroke-width:2;fill:none;stroke-linecap:round}
+.db-crumb{font-family:'Inter',sans-serif;font-size:12px;color:var(--mu);display:flex;align-items:center;gap:7px}
+.db-crumb a{color:var(--mu);text-decoration:none}
+.db-crumb a:hover{color:var(--teal)}
+.db-crumb .sep{color:var(--bd)}
+.db-crumb strong{color:var(--teal);font-weight:700}
+.db-top-r{margin-left:auto;display:flex;align-items:center;gap:10px}
+.db-search{display:flex;align-items:center;gap:8px;background:#f8fbfc;border:1px solid var(--bd);border-radius:9px;padding:8px 13px;width:250px;transition:border-color .2s}
+.db-search:focus-within{border-color:var(--tl)}
+.db-search svg{width:14px;height:14px;stroke:var(--mu);stroke-width:2;fill:none;stroke-linecap:round;flex-shrink:0}
+.db-search input{border:none;background:none;outline:none;font-family:'Poppins',sans-serif;font-size:12.5px;color:var(--tx);width:100%}
+.db-search input::placeholder{color:var(--mu);opacity:.7}
+.db-ico-btn{width:36px;height:36px;border-radius:9px;border:1px solid var(--bd);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:background .2s}
+.db-ico-btn:hover{background:var(--tp)}
+.db-ico-btn svg{width:16px;height:16px;stroke:var(--teal);stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-ico-btn .dot{position:absolute;top:7px;right:8px;width:6px;height:6px;border-radius:50%;background:var(--bad);border:1.5px solid #fff}
+
+.db-body{padding:26px}
+
+/* ══════ PAGE HEAD ══════ */
+.db-ph{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+.db-ph-ey{display:inline-flex;align-items:center;gap:8px;background:var(--tp);border:1px solid rgba(17,76,95,.12);color:var(--teal);font-family:'Inter',sans-serif;font-size:10px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-bottom:11px}
+.db-ph-ey::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--tl)}
+.db-ph h1{font-family:'Inter',sans-serif;font-size:27px;font-weight:600;letter-spacing:-1px;color:var(--tx);line-height:1.1}
+.db-ph h1 em{font-style:normal;color:var(--tl)}
+.db-ph-sub{font-size:13px;color:var(--mu);margin-top:7px}
+.db-ph-act{display:flex;gap:9px;flex-shrink:0}
+.db-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--teal),var(--tl));color:#fff;padding:10px 19px;border-radius:8px;font-family:'Inter',sans-serif;font-size:12.5px;font-weight:800;text-decoration:none;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(17,76,95,.2);transition:transform .2s,box-shadow .2s}
+.db-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(17,76,95,.3)}
+.db-btn svg{width:14px;height:14px;stroke:#fff;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-btn-o{background:#fff;color:var(--teal);border:1px solid var(--bd);box-shadow:none}
+.db-btn-o:hover{background:var(--tp);transform:none;box-shadow:none}
+.db-btn-o svg{stroke:var(--teal)}
+
+/* ══════ KPI ROW ══════ */
+.db-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+.db-kpi{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:20px;position:relative;overflow:hidden;transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s,border-color .25s}
+.db-kpi:hover{transform:translateY(-3px);box-shadow:var(--sh-md);border-color:var(--bh)}
+.db-kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.22,1,.36,1)}
+.db-kpi:hover::before{transform:scaleX(1)}
+.db-kpi.k-due::before{background:linear-gradient(90deg,var(--teal),var(--tl))}
+.db-kpi.k-open::before{background:linear-gradient(90deg,#c67c1e,#e0a martial)}
+.db-kpi.k-open::before{background:linear-gradient(90deg,#c67c1e,#e5b25f)}
+.db-kpi.k-done::before{background:linear-gradient(90deg,#1f9d6b,#4ec795)}
+.db-kpi.k-over::before{background:linear-gradient(90deg,#c0483f,#e07a70)}
+.db-kpi-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:15px}
+.db-kpi-lbl{font-family:'Inter',sans-serif;font-size:10px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--mu);line-height:1.4;max-width:150px}
+.db-kpi-ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .3s}
+.db-kpi:hover .db-kpi-ic{transform:scale(1.08) rotate(-4deg)}
+.db-kpi-ic svg{width:18px;height:18px;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.k-due .db-kpi-ic{background:var(--tp)}.k-due .db-kpi-ic svg{stroke:var(--teal)}
+.k-open .db-kpi-ic{background:rgba(198,124,30,.11)}.k-open .db-kpi-ic svg{stroke:var(--warn)}
+.k-done .db-kpi-ic{background:rgba(31,157,107,.11)}.k-done .db-kpi-ic svg{stroke:var(--ok)}
+.k-over .db-kpi-ic{background:rgba(192,72,63,.1)}.k-over .db-kpi-ic svg{stroke:var(--bad)}
+.db-kpi-n{font-family:'Inter',sans-serif;font-size:33px;font-weight:800;letter-spacing:-1.6px;color:var(--tx);line-height:1}
+.db-kpi-n small{font-size:14px;font-weight:700;color:var(--mu);letter-spacing:0;margin-left:3px}
+.db-kpi-ft{display:flex;align-items:center;gap:6px;margin-top:11px;padding-top:11px;border-top:1px solid var(--bd);font-family:'Inter',sans-serif;font-size:11px;color:var(--mu)}
+.db-trend{display:inline-flex;align-items:center;gap:3px;font-weight:800;font-size:11px}
+.db-trend svg{width:11px;height:11px;stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-trend.up{color:var(--ok)}.db-trend.up svg{stroke:var(--ok)}
+.db-trend.dn{color:var(--bad)}.db-trend.dn svg{stroke:var(--bad)}
+.db-trend.fl{color:var(--mu)}.db-trend.fl svg{stroke:var(--mu)}
+
+/* ══════ SECONDARY STRIP ══════ */
+.db-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
+.db-mini{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:15px 17px;display:flex;align-items:center;gap:13px;transition:border-color .25s,box-shadow .3s}
+.db-mini:hover{border-color:var(--bh);box-shadow:var(--sh-sm)}
+.db-mini-ic{width:34px;height:34px;border-radius:9px;background:var(--tp);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.db-mini-ic svg{width:16px;height:16px;stroke:var(--teal);stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-mini-n{font-family:'Inter',sans-serif;font-size:19px;font-weight:800;color:var(--tx);letter-spacing:-.7px;line-height:1}
+.db-mini-l{font-family:'Inter',sans-serif;font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--mu);margin-top:4px}
+
+/* ══════ GRID ══════ */
+.db-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.db-grid-3{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+
+/* ══════ PANEL ══════ */
+.db-panel{background:#fff;border:1px solid var(--bd);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.db-panel-hd{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.db-panel-ey{font-family:'Inter',sans-serif;font-size:9px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:var(--tl);margin-bottom:4px}
+.db-panel-hd h2{font-family:'Inter',sans-serif;font-size:16px;font-weight:700;letter-spacing:-.35px;color:var(--tx);line-height:1.2}
+.db-panel-hd-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+.db-link{display:inline-flex;align-items:center;gap:5px;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:800;color:var(--teal);text-decoration:none;border-bottom:1.5px solid transparent;transition:border-color .2s,gap .2s}
+.db-link:hover{color:var(--tl);border-color:var(--tl);gap:8px}
+.db-link svg{width:11px;height:11px;stroke:currentColor;stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.db-link:hover svg{transform:translateX(2px)}
+.db-seg{display:flex;background:#f8fbfc;border:1px solid var(--bd);border-radius:8px;padding:2px;gap:2px}
+.db-seg button{border:none;background:none;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--mu);padding:5px 11px;border-radius:6px;cursor:pointer;transition:background .2s,color .2s}
+.db-seg button.on{background:var(--teal);color:#fff}
+.db-seg button:not(.on):hover{color:var(--teal)}
+.db-panel-bd{padding:20px;flex:1}
+.db-panel-bd.flush{padding:0}
+
+/* ══════ TABLE ══════ */
+.db-tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.db-tbl{width:100%;border-collapse:collapse;min-width:880px}
+.db-tbl thead th{background:#f8fbfc;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;color:var(--mu);text-align:left;padding:11px 20px;white-space:nowrap;border-bottom:1px solid var(--bd)}
+.db-tbl tbody td{padding:13px 20px;font-size:13px;color:var(--mu);border-bottom:1px solid var(--bd);vertical-align:middle;white-space:nowrap}
+.db-tbl tbody tr{transition:background .15s;cursor:pointer}
+.db-tbl tbody tr:hover{background:var(--tp)}
+.db-tbl tbody tr:last-child td{border-bottom:none}
+.db-ref{font-family:'Inter',sans-serif;font-weight:800;font-size:12px;color:var(--teal)}
+.db-cell-2{display:flex;flex-direction:column;gap:2px}
+.db-cell-2 strong{font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;color:var(--tx)}
+.db-cell-2 span{font-size:11px;color:var(--mu)}
+.db-asset{display:inline-flex;align-items:center;gap:6px;background:var(--tp);border:1px solid rgba(17,76,95,.09);border-radius:5px;padding:3px 9px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--teal)}
+.db-eng{display:flex;align-items:center;gap:8px}
+.db-eng-av{width:27px;height:27px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--tl));display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;color:#fff;flex-shrink:0}
+.db-eng span{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--tx)}
+.db-chip{display:inline-flex;align-items:center;gap:5px;font-family:'Inter',sans-serif;font-size:10.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.db-chip::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.db-chip.s-prog{background:rgba(30,136,168,.1);color:#166b85}
+.db-chip.s-open{background:rgba(198,124,30,.11);color:#9e5f10}
+.db-chip.s-done{background:rgba(31,157,107,.11);color:#137a51}
+.db-chip.s-over{background:rgba(192,72,63,.1);color:#a13a32}
+.db-chip.s-sched{background:rgba(17,76,95,.07);color:var(--mu)}
+
+/* ══════ CHARTS ══════ */
+.db-chart-mt{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.db-chart-n{font-family:'Inter',sans-serif;font-size:27px;font-weight:800;letter-spacing:-1.2px;color:var(--tx);line-height:1}
+.db-chart-cap{font-size:11.5px;color:var(--mu)}
+.db-chart-svg{width:100%;height:auto;display:block;overflow:visible}
+.db-lg{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--bd)}
+.db-lg-i{display:flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:var(--mu)}
+.db-lg-sw{width:11px;height:11px;border-radius:3px;flex-shrink:0}
+
+/* ══════ BAR LIST ══════ */
+.db-bl{display:flex;flex-direction:column;gap:15px}
+.db-bl-i{display:flex;flex-direction:column;gap:7px}
+.db-bl-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.db-bl-lbl{font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;color:var(--tx)}
+.db-bl-v{font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:var(--teal)}
+.db-bl-v small{font-weight:600;color:var(--mu);font-size:11px}
+.db-bl-tr{height:7px;background:#eef4f6;border-radius:4px;overflow:hidden}
+.db-bl-fl{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--teal),var(--tl))}
+
+/* ══════ ENGINEER LIST ══════ */
+.db-el{display:flex;flex-direction:column}
+.db-el-i{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:13px 20px;border-bottom:1px solid var(--bd);transition:background .15s}
+.db-el-i:last-child{border-bottom:none}
+.db-el-i:hover{background:var(--tp)}
+.db-el-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--tl));display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;position:relative}
+.db-el-av::after{content:"";position:absolute;bottom:-1px;right:-1px;width:11px;height:11px;border-radius:50%;border:2px solid #fff}
+.db-el-av.on::after{background:var(--ok)}
+.db-el-av.busy::after{background:var(--warn)}
+.db-el-av.off::after{background:#b9c6cb}
+.db-el-n{font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:var(--tx)}
+.db-el-m{font-size:11px;color:var(--mu);margin-top:2px}
+.db-el-r{text-align:right;flex-shrink:0}
+.db-el-c{font-family:'Inter',sans-serif;font-size:15px;font-weight:800;color:var(--teal);line-height:1}
+.db-el-cl{font-family:'Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--mu);margin-top:3px}
+
+/* ══════ RENEWALS ══════ */
+.db-rn{display:flex;flex-direction:column}
+.db-rn-i{padding:14px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:13px;transition:background .15s}
+.db-rn-i:last-child{border-bottom:none}
+.db-rn-i:hover{background:var(--tp)}
+.db-rn-d{width:44px;flex-shrink:0;text-align:center;background:var(--tp);border-radius:9px;padding:7px 0}
+.db-rn-dd{font-family:'Inter',sans-serif;font-size:16px;font-weight:800;color:var(--teal);line-height:1}
+.db-rn-dm{font-family:'Inter',sans-serif;font-size:9px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--mu);margin-top:2px}
+.db-rn-b{flex:1;min-width:0}
+.db-rn-n{font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.db-rn-m{font-size:11px;color:var(--mu);margin-top:3px}
+.db-rn-v{font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:var(--teal);flex-shrink:0}
+
+/* ══════ ALERT ══════ */
+.db-alert{background:#fff;border:1px solid rgba(192,72,63,.2);border-left:4px solid var(--bad);border-radius:0 12px 12px 0;padding:14px 18px;display:flex;align-items:center;gap:13px;margin-bottom:20px}
+.db-alert-ic{width:34px;height:34px;border-radius:9px;background:rgba(192,72,63,.09);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.db-alert-ic svg{width:17px;height:17px;stroke:var(--bad);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-alert-t{font-family:'Inter',sans-serif;font-size:13px;font-weight:800;color:var(--tx)}
+.db-alert-s{font-size:12px;color:var(--mu);margin-top:2px}
+.db-alert a{margin-left:auto;flex-shrink:0}
+
+/* ══════ RESPONSIVE ══════ */
+@media(max-width:1400px){
+  .db-kpis{grid-template-columns:repeat(2,1fr)}
+  .db-strip{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:1160px){
+  :root{--sbw:0px}
+  .db-sb{transform:translateX(-100%);transition:transform .3s}
+  .db-sb.open{transform:none;width:246px}
+  .db-main{margin-left:0}
+  .db-grid,.db-grid-3{grid-template-columns:1fr}
+  .db-search{width:180px}
+}
+@media(max-width:760px){
+  .db-kpis{grid-template-columns:1fr}
+  .db-strip{grid-template-columns:1fr 1fr}
+  .db-body{padding:18px}
+  .db-top{padding:0 18px}
+  .db-search{display:none}
+  .db-ph-act{width:100%}
+}
+
+/* ══════ SHARED ADDITIONS (v2 pages) ══════ */
+.db-tbl tbody td,.db-kpi-n,.db-mini-n,.db-el-c,.db-bl-v{font-variant-numeric:tabular-nums}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--tl);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Filter bar */
+.db-fb{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.db-fb-lbl{display:inline-flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;color:var(--mu);padding-right:4px}
+.db-fb-lbl svg{width:14px;height:14px;stroke:var(--teal);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-sel{position:relative;display:inline-flex}
+.db-sel select{appearance:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:var(--tx);background:#f8fbfc;border:1px solid var(--bd);border-radius:8px;padding:8px 30px 8px 12px;cursor:pointer;transition:border-color .2s,background .2s}
+.db-sel select:hover{border-color:var(--bh);background:var(--tp)}
+.db-sel::after{content:"";position:absolute;right:12px;top:50%;width:6px;height:6px;border-right:1.8px solid var(--mu);border-bottom:1.8px solid var(--mu);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+.db-fb-clr{margin-left:auto;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:700;color:var(--mu);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.db-fb-clr:hover{color:var(--bad)}
+
+/* Tabs with counts */
+.db-tabs{display:flex;gap:2px;background:#fff;border:1px solid var(--bd);border-radius:12px;padding:5px;margin-bottom:16px;overflow-x:auto}
+.db-tab{display:inline-flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;color:var(--mu);background:none;border:none;padding:9px 15px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:background .2s,color .2s}
+.db-tab:hover{background:var(--tp);color:var(--teal)}
+.db-tab.on{background:var(--teal);color:#fff}
+.db-tab-c{font-size:10.5px;font-weight:800;padding:1px 7px;border-radius:9px;background:rgba(17,76,95,.08);color:var(--mu);font-variant-numeric:tabular-nums}
+.db-tab.on .db-tab-c{background:rgba(255,255,255,.18);color:#fff}
+.db-tab.warn .db-tab-c{background:rgba(192,72,63,.12);color:#a13a32}
+
+/* Pagination */
+.db-pg{display:flex;align-items:center;gap:12px;padding:14px 20px;border-top:1px solid var(--bd);flex-wrap:wrap}
+.db-pg-i{font-family:'Inter',sans-serif;font-size:11.5px;color:var(--mu);font-variant-numeric:tabular-nums}
+.db-pg-c{margin-left:auto;display:flex;gap:4px}
+.db-pg-b{min-width:32px;height:32px;padding:0 9px;border:1px solid var(--bd);background:#fff;border-radius:8px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:var(--mu);cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+.db-pg-b:hover:not(:disabled){background:var(--tp);color:var(--teal);border-color:var(--bh)}
+.db-pg-b.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.db-pg-b:disabled{opacity:.4;cursor:not-allowed}
+.db-pg-b svg{width:13px;height:13px;stroke:currentColor;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* Priority + type chips */
+.db-pri{display:inline-flex;align-items:center;gap:5px;font-family:'Inter',sans-serif;font-size:10.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase}
+.db-pri::before{content:"";width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;flex-shrink:0}
+.db-pri.p-hi{color:#a13a32}.db-pri.p-hi::before{border-bottom:7px solid #c0483f}
+.db-pri.p-md{color:#9e5f10}.db-pri.p-md::before{border-bottom:7px solid #c67c1e}
+.db-pri.p-lo{color:var(--mu)}.db-pri.p-lo::before{border-bottom:7px solid #b9c6cb}
+.db-type{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--mu)}
+.db-type b{display:block;font-size:11.5px;font-weight:800;color:var(--tx)}
+
+/* Row actions */
+.db-row-act{width:28px;height:28px;border-radius:7px;border:1px solid transparent;background:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s}
+.db-row-act:hover{background:#fff;border-color:var(--bd)}
+.db-row-act svg{width:15px;height:15px;stroke:var(--mu);stroke-width:2.2;fill:none;stroke-linecap:round}
+.db-cbx{width:15px;height:15px;accent-color:var(--teal);cursor:pointer}
+
+/* Empty state */
+.db-empty{padding:44px 24px;text-align:center}
+.db-empty-ic{width:52px;height:52px;border-radius:14px;background:var(--tp);display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.db-empty-ic svg{width:24px;height:24px;stroke:var(--teal);stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-empty h3{font-family:'Inter',sans-serif;font-size:14px;font-weight:700;color:var(--tx);margin-bottom:5px}
+.db-empty p{font-size:12.5px;color:var(--mu);max-width:340px;margin:0 auto 16px;line-height:1.6}
+
+
+/* ══════ CALENDAR ══════ */
+.db-cal-hd{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 20px;border-bottom:1px solid var(--bd)}
+.db-cal-m{font-family:'Inter',sans-serif;font-size:16px;font-weight:800;letter-spacing:-.4px;color:var(--tx);min-width:150px;font-variant-numeric:tabular-nums}
+.db-cal-nav{display:flex;gap:4px}
+.db-cal-nav button{width:30px;height:30px;border:1px solid var(--bd);background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s,border-color .2s}
+.db-cal-nav button:hover{background:var(--tp);border-color:var(--bh)}
+.db-cal-nav svg{width:13px;height:13px;stroke:var(--teal);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-cal-today{font-family:'Inter',sans-serif;font-size:11.5px;font-weight:800;color:var(--teal);background:var(--tp);border:1px solid rgba(17,76,95,.12);border-radius:8px;padding:7px 13px;cursor:pointer}
+.db-cal-today:hover{background:#dceef3}
+
+.db-cal{display:grid;grid-template-columns:repeat(7,1fr)}
+.db-cal-dow{font-family:'Inter',sans-serif;font-size:9.5px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;color:var(--mu);text-align:center;padding:10px 0;background:#f8fbfc;border-bottom:1px solid var(--bd)}
+.db-cal-c{min-height:118px;border-right:1px solid var(--bd);border-bottom:1px solid var(--bd);padding:8px;display:flex;flex-direction:column;gap:4px;transition:background .15s;cursor:pointer}
+.db-cal-c:nth-child(7n+7){border-right:none}
+.db-cal-c:hover{background:#fbfdfe}
+.db-cal-c.pad{background:#fafcfd;cursor:default}
+.db-cal-c.pad:hover{background:#fafcfd}
+.db-cal-c.wknd{background:#fafcfd}
+.db-cal-d{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:2px}
+.db-cal-dn{font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:var(--tx);font-variant-numeric:tabular-nums}
+.db-cal-c.pad .db-cal-dn{color:#c3d0d5}
+.db-cal-c.today .db-cal-dn{width:23px;height:23px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--tl));color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px}
+.db-cal-c.today{background:rgba(30,136,168,.045);box-shadow:inset 0 0 0 2px var(--tl)}
+.db-cal-ct{font-family:'Inter',sans-serif;font-size:9.5px;font-weight:800;color:var(--mu);letter-spacing:.4px}
+.db-vp{display:flex;align-items:center;gap:5px;border-radius:5px;padding:4px 6px;font-family:'Inter',sans-serif;font-size:10.5px;font-weight:700;line-height:1.25;text-align:left;border-left:2.5px solid transparent;background:#f2f7f9;color:var(--teal);overflow:hidden}
+.db-vp span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.db-vp b{font-weight:800;font-size:9.5px;opacity:.75;flex-shrink:0;font-variant-numeric:tabular-nums}
+.db-vp.v-done{background:rgba(31,157,107,.09);border-left-color:var(--ok);color:#137a51}
+.db-vp.v-prog{background:rgba(30,136,168,.1);border-left-color:var(--tl);color:#166b85}
+.db-vp.v-open{background:rgba(198,124,30,.1);border-left-color:var(--warn);color:#9e5f10}
+.db-vp.v-over{background:rgba(192,72,63,.09);border-left-color:var(--bad);color:#a13a32}
+.db-vp.v-sched{background:#f2f7f9;border-left-color:#b9c6cb;color:var(--mu)}
+.db-vp-more{font-family:'Inter',sans-serif;font-size:10px;font-weight:800;color:var(--tl);padding:2px 6px;text-align:left}
+.db-vp-more:hover{text-decoration:underline}
+@media(max-width:1160px){
+  .db-cal{grid-template-columns:1fr;border-top:1px solid var(--bd)}
+  .db-cal-dow{display:none}
+  .db-cal-c{min-height:auto;border-right:none}
+  .db-cal-c.pad{display:none}
+  .db-cal-d::after{content:attr(data-dow);font-family:'Inter',sans-serif;font-size:9.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--mu);margin-right:auto;margin-left:8px}
+  .db-cal-d{justify-content:flex-start}
+  .db-cal-ct{margin-left:auto}
+}
+
+</style>
+</head>
+<body>
+<aside class="db-sb" id="sb">
+<div class="db-sb-in">
+  <div class="db-brand">
+    <div class="db-brand-mark">
+      <svg viewBox="0 0 24 24"><path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0c0-4.5-7-13-7-13z"/><circle cx="12" cy="15" r="2.5"/></svg>
+    </div>
+    <div>
+      <div class="db-brand-name">Water Bird</div>
+      <div class="db-brand-sub">AMC Platform</div>
+    </div>
+  </div>
+
+  <nav class="db-nav">
+    <div class="db-nav-grp">Overview</div>
+    <a href="waterbird-amc-dashboard.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg> Dashboard</a>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Reports</a>
+
+    <div class="db-nav-grp">Contracts</div>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> AMC Contracts <span class="db-nav-pill q">312</span></a>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.2-8.6"/><polyline points="21 3 21 9 15 9"/></svg> Renewals <span class="db-nav-pill">18</span></a>
+
+    <div class="db-nav-grp">Field Operations</div>
+    <a href="waterbird-visit-schedule-page.html" class="active"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Visit Schedule</a>
+    <a href="waterbird-work-orders-page.html"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> Work Orders <span class="db-nav-pill">7</span></a>
+    <a href="waterbird-inspections-page.html"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Inspections</a>
+    <a href="waterbird-engineers-page.html"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Engineers</a>
+
+    <div class="db-nav-grp">Assets &amp; Sites</div>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Customers</a>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Sites</a>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3S3 13.66 3 12"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg> Assets</a>
+
+    <div class="db-nav-grp">Inventory</div>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v7l-4 8h12l-4-8V3"/><line x1="6" y1="16" x2="18" y2="16"/></svg> Chemicals</a>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/></svg> Spares &amp; Consumables</a>
+  </nav>
+
+  <div class="db-sb-foot">
+    <div class="db-sb-user">
+      <div class="db-sb-av">RB</div>
+      <div>
+        <div class="db-sb-user-n">Renjish Basheer</div>
+        <div class="db-sb-user-r">Service Manager</div>
+      </div>
+    </div>
+  </div>
+</div>
+</aside>
+
+<div class="db-main">
+  <header class="db-top">
+    <button class="db-burger" onclick="document.getElementById('sb').classList.toggle('open')" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="db-crumb"><a href="waterbird-amc-dashboard.html">Home</a><span class="sep">/</span><a href="waterbird-visit-schedule-page.html">Field Operations</a><span class="sep">/</span><strong>Visit Schedule</strong></div>
+    <div class="db-top-r">
+      <div class="db-search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" placeholder="Search visits, sites, work orders…">
+      </div>
+      <button class="db-ico-btn" aria-label="Notifications"><span class="dot"></span><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+      <button class="db-ico-btn" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6h.09A1.65 1.65 0 0 0 10 3.09V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+    </div>
+  </header>
+
+  <div class="db-body">
+    <!-- Page head -->
+    <div class="db-ph">
+      <div>
+        <span class="db-ph-ey">Field Operations</span>
+        <h1>Visit <em>Schedule</em></h1>
+        <p class="db-ph-sub">September 2026 &middot; 284 visits planned from 312 active contracts &middot; 5 still need an engineer</p>
+      </div>
+      <div class="db-ph-act">
+        <button class="db-btn db-btn-o"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export month</button>
+        <button class="db-btn"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Schedule visit</button>
+      </div>
+    </div>
+
+    <!-- Unassigned alert -->
+    <div class="db-alert">
+      <div class="db-alert-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+      <div>
+        <div class="db-alert-t">5 visits this month have no engineer assigned</div>
+        <div class="db-alert-s">Earliest falls on 11 September &mdash; Ajman Free Zone ETP. Assign before the weekend to keep the monthly SLA intact.</div>
+      </div>
+      <a href="#unassigned" class="db-link">Assign now <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+
+    <!-- Month counters -->
+    <div class="db-strip">
+      <div class="db-mini">
+        <div class="db-mini-ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div><div class="db-mini-n">284</div><div class="db-mini-l">Planned</div></div>
+      </div>
+      <div class="db-mini">
+        <div class="db-mini-ic"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <div><div class="db-mini-n">236</div><div class="db-mini-l">Completed</div></div>
+      </div>
+      <div class="db-mini">
+        <div class="db-mini-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div><div class="db-mini-n">12</div><div class="db-mini-l">In progress</div></div>
+      </div>
+      <div class="db-mini">
+        <div class="db-mini-ic"><svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div><div class="db-mini-n">7</div><div class="db-mini-l">Overdue</div></div>
+      </div>
+      <div class="db-mini">
+        <div class="db-mini-ic"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg></div>
+        <div><div class="db-mini-n">5</div><div class="db-mini-l">Unassigned</div></div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="db-fb">
+      <span class="db-fb-lbl"><svg viewBox="0 0 24 24"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg> Filter</span>
+      <div class="db-sel"><select><option>All emirates</option><option>Dubai</option><option>Abu Dhabi</option><option>Sharjah</option><option>Ajman &amp; Umm Al Quwain</option><option>Ras Al Khaimah &amp; Fujairah</option></select></div>
+      <div class="db-sel"><select><option>All asset types</option><option>STP</option><option>ETP</option><option>Booster pump set</option><option>Cooling tower dosing</option><option>Water treatment dosing</option></select></div>
+      <div class="db-sel"><select><option>All engineers</option><option>Rajesh Kumar</option><option>Mohammed Ashraf</option><option>Suresh Pillai</option><option>Anil Varghese</option><option>Unassigned</option></select></div>
+      <div class="db-sel"><select><option>All frequencies</option><option>Weekly</option><option>Monthly</option><option>Quarterly</option><option>Half-yearly</option></select></div>
+      <div class="db-sel"><select><option>All statuses</option><option>Scheduled</option><option>Assigned</option><option>In progress</option><option>Completed</option><option>Overdue</option></select></div>
+      <button class="db-fb-clr">Clear filters</button>
+    </div>
+
+    <!-- Calendar -->
+    <div class="db-panel" style="margin-bottom:16px">
+      <div class="db-cal-hd">
+        <div class="db-cal-nav">
+          <button aria-label="Previous month"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <button aria-label="Next month"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+        </div>
+        <div class="db-cal-m">September 2026</div>
+        <button class="db-cal-today">Today</button>
+        <div class="db-panel-hd-r">
+          <div class="db-seg">
+            <button class="on">Month</button>
+            <button>Week</button>
+            <button>List</button>
+          </div>
+        </div>
+      </div>
+      <div class="db-cal">
+        <div class="db-cal-dow">Mon</div>
+        <div class="db-cal-dow">Tue</div>
+        <div class="db-cal-dow">Wed</div>
+        <div class="db-cal-dow">Thu</div>
+        <div class="db-cal-dow">Fri</div>
+        <div class="db-cal-dow">Sat</div>
+        <div class="db-cal-dow">Sun</div>
+        <div class="db-cal-c pad"><div class="db-cal-d"><span class="db-cal-dn">&nbsp;</span></div></div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Wed 1 Sep"><span class="db-cal-dn">1</span><span class="db-cal-ct">9 visits</span></div>
+          <div class="db-vp v-done"><b>8390</b><span>Dubai Festival City</span></div>
+          <div class="db-vp v-done"><b>8391</b><span>Sobha Hartland STP</span></div>
+          <button class="db-vp-more">+7 more</button>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Thu 2 Sep"><span class="db-cal-dn">2</span><span class="db-cal-ct">11 visits</span></div>
+          <div class="db-vp v-done"><b>8394</b><span>Emaar Business Park</span></div>
+          <div class="db-vp v-done"><b>8395</b><span>Nakheel Mall Booster</span></div>
+          <button class="db-vp-more">+9 more</button>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Fri 3 Sep"><span class="db-cal-dn">3</span><span class="db-cal-ct">12 visits</span></div>
+          <div class="db-vp v-done"><b>8402</b><span>Al Quoz Industrial Park</span></div>
+          <div class="db-vp v-over"><b>8404</b><span>DIP Labour Camp ETP</span></div>
+          <button class="db-vp-more">+10 more</button>
+        </div>
+        <div class="db-cal-c today wknd">
+          <div class="db-cal-d" data-dow="Sat 4 Sep"><span class="db-cal-dn">4</span><span class="db-cal-ct">14 visits</span></div>
+          <div class="db-vp v-done"><b>8412</b><span>Emirates Pearl Hotel</span></div>
+          <div class="db-vp v-prog"><b>8413</b><span>Al Quoz Industrial Park</span></div>
+          <div class="db-vp v-prog"><b>8414</b><span>Marina Heights Tower</span></div>
+          <div class="db-vp v-open"><b>8415</b><span>Jebel Ali Free Zone</span></div>
+          <div class="db-vp v-sched"><b>8416</b><span>Yas Island Resort</span></div>
+          <button class="db-vp-more">+9 more</button>
+        </div>
+        <div class="db-cal-c wknd">
+          <div class="db-cal-d" data-dow="Sun 5 Sep"><span class="db-cal-dn">5</span><span class="db-cal-ct">4 visits</span></div>
+          <div class="db-vp v-sched"><b>8420</b><span>Sharjah Corniche Villas</span></div>
+          <button class="db-vp-more">+3 more</button>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Mon 6 Sep"><span class="db-cal-dn">6</span></div>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Tue 7 Sep"><span class="db-cal-dn">7</span><span class="db-cal-ct">13 visits</span></div>
+          <div class="db-vp v-sched"><b>8423</b><span>Deira City Centre</span></div>
+          <div class="db-vp v-sched"><b>8424</b><span>Dragon Mart 2 STP</span></div>
+          <div class="db-vp v-sched"><b>8425</b><span>Discovery Gardens</span></div>
+          <button class="db-vp-more">+10 more</button>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Wed 8 Sep"><span class="db-cal-dn">8</span><span class="db-cal-ct">10 visits</span></div>
+          <div class="db-vp v-sched"><b>8431</b><span>Abu Dhabi Mall</span></div>
+          <div class="db-vp v-sched"><b>8432</b><span>Khalifa City Compound</span></div>
+          <button class="db-vp-more">+8 more</button>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Thu 9 Sep"><span class="db-cal-dn">9</span><span class="db-cal-ct">12 visits</span></div>
+          <div class="db-vp v-sched"><b>8438</b><span>Mirdif Hills Community</span></div>
+          <div class="db-vp v-sched"><b>8439</b><span>Silicon Oasis HQ</span></div>
+          <button class="db-vp-more">+10 more</button>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Fri 10 Sep"><span class="db-cal-dn">10</span><span class="db-cal-ct">11 visits</span></div>
+          <div class="db-vp v-sched"><b>8444</b><span>Jumeirah Golf Estates</span></div>
+          <div class="db-vp v-sched"><b>8445</b><span>Al Barsha Mall Dosing</span></div>
+          <button class="db-vp-more">+9 more</button>
+        </div>
+        <div class="db-cal-c wknd">
+          <div class="db-cal-d" data-dow="Sat 11 Sep"><span class="db-cal-dn">11</span><span class="db-cal-ct">5 visits</span></div>
+          <div class="db-vp v-sched"><b>8451</b><span>Ajman Free Zone ETP</span></div>
+          <button class="db-vp-more">+4 more</button>
+        </div>
+        <div class="db-cal-c wknd">
+          <div class="db-cal-d" data-dow="Sun 12 Sep"><span class="db-cal-dn">12</span></div>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Mon 13 Sep"><span class="db-cal-dn">13</span></div>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Tue 14 Sep"><span class="db-cal-dn">14</span><span class="db-cal-ct">15 visits</span></div>
+          <div class="db-vp v-sched"><b>8456</b><span>Business Bay Executive</span></div>
+          <div class="db-vp v-sched"><b>8457</b><span>Dubai Hills Estate</span></div>
+          <div class="db-vp v-sched"><b>8458</b><span>Warsan Labour Village</span></div>
+          <button class="db-vp-more">+12 more</button>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Wed 15 Sep"><span class="db-cal-dn">15</span><span class="db-cal-ct">12 visits</span></div>
+          <div class="db-vp v-sched"><b>8463</b><span>Sheikh Zayed Rd Tower</span></div>
+          <div class="db-vp v-sched"><b>8464</b><span>Musaffah Workshop ETP</span></div>
+          <button class="db-vp-more">+10 more</button>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Thu 16 Sep"><span class="db-cal-dn">16</span><span class="db-cal-ct">13 visits</span></div>
+          <div class="db-vp v-sched"><b>8470</b><span>Ibn Battuta Mall</span></div>
+          <div class="db-vp v-sched"><b>8471</b><span>Al Ain Dairy Plant</span></div>
+          <button class="db-vp-more">+11 more</button>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Fri 17 Sep"><span class="db-cal-dn">17</span><span class="db-cal-ct">10 visits</span></div>
+          <div class="db-vp v-sched"><b>8477</b><span>Palm Jumeirah Residence</span></div>
+          <div class="db-vp v-sched"><b>8478</b><span>RAK Ceramics Facility</span></div>
+          <button class="db-vp-more">+8 more</button>
+        </div>
+        <div class="db-cal-c wknd">
+          <div class="db-cal-d" data-dow="Sat 18 Sep"><span class="db-cal-dn">18</span><span class="db-cal-ct">4 visits</span></div>
+          <div class="db-vp v-sched"><b>8483</b><span>Fujairah Port Utility</span></div>
+          <button class="db-vp-more">+3 more</button>
+        </div>
+        <div class="db-cal-c wknd">
+          <div class="db-cal-d" data-dow="Sun 19 Sep"><span class="db-cal-dn">19</span></div>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Mon 20 Sep"><span class="db-cal-dn">20</span></div>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Tue 21 Sep"><span class="db-cal-dn">21</span><span class="db-cal-ct">14 visits</span></div>
+          <div class="db-vp v-sched"><b>8488</b><span>DAFZA Office Park</span></div>
+          <div class="db-vp v-sched"><b>8489</b><span>Meydan Grandstand</span></div>
+          <div class="db-vp v-sched"><b>8490</b><span>Al Nahda Residency</span></div>
+          <button class="db-vp-more">+11 more</button>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Wed 22 Sep"><span class="db-cal-dn">22</span><span class="db-cal-ct">11 visits</span></div>
+          <div class="db-vp v-sched"><b>8496</b><span>Reem Island Towers</span></div>
+          <div class="db-vp v-sched"><b>8497</b><span>Mussafah Camp 3 STP</span></div>
+          <button class="db-vp-more">+9 more</button>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Thu 23 Sep"><span class="db-cal-dn">23</span><span class="db-cal-ct">12 visits</span></div>
+          <div class="db-vp v-sched"><b>8502</b><span>Dubai Investment Park</span></div>
+          <div class="db-vp v-sched"><b>8503</b><span>Sharjah Uni City</span></div>
+          <button class="db-vp-more">+10 more</button>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Fri 24 Sep"><span class="db-cal-dn">24</span><span class="db-cal-ct">12 visits</span></div>
+          <div class="db-vp v-sched"><b>8509</b><span>Bluewaters Island</span></div>
+          <div class="db-vp v-sched"><b>8510</b><span>JVC Community STP</span></div>
+          <button class="db-vp-more">+10 more</button>
+        </div>
+        <div class="db-cal-c wknd">
+          <div class="db-cal-d" data-dow="Sat 25 Sep"><span class="db-cal-dn">25</span><span class="db-cal-ct">3 visits</span></div>
+          <div class="db-vp v-sched"><b>8515</b><span>Umm Al Quwain Factory</span></div>
+          <button class="db-vp-more">+2 more</button>
+        </div>
+        <div class="db-cal-c wknd">
+          <div class="db-cal-d" data-dow="Sun 26 Sep"><span class="db-cal-dn">26</span></div>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Mon 27 Sep"><span class="db-cal-dn">27</span></div>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Tue 28 Sep"><span class="db-cal-dn">28</span><span class="db-cal-ct">13 visits</span></div>
+          <div class="db-vp v-sched"><b>8520</b><span>City Walk Retail</span></div>
+          <div class="db-vp v-sched"><b>8521</b><span>Motor City Community</span></div>
+          <div class="db-vp v-sched"><b>8522</b><span>Al Aweer Central Market</span></div>
+          <button class="db-vp-more">+10 more</button>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Wed 29 Sep"><span class="db-cal-dn">29</span><span class="db-cal-ct">10 visits</span></div>
+          <div class="db-vp v-sched"><b>8528</b><span>Zayed Military City</span></div>
+          <div class="db-vp v-sched"><b>8529</b><span>Arabian Ranches 3</span></div>
+          <button class="db-vp-more">+8 more</button>
+        </div>
+        <div class="db-cal-c">
+          <div class="db-cal-d" data-dow="Thu 30 Sep"><span class="db-cal-dn">30</span><span class="db-cal-ct">11 visits</span></div>
+          <div class="db-vp v-sched"><b>8534</b><span>Trade Centre District</span></div>
+          <div class="db-vp v-sched"><b>8535</b><span>Jebel Ali Port Utility</span></div>
+          <button class="db-vp-more">+9 more</button>
+        </div>
+        <div class="db-cal-c pad"><div class="db-cal-d"><span class="db-cal-dn">&nbsp;</span></div></div>
+        <div class="db-cal-c pad"><div class="db-cal-d"><span class="db-cal-dn">&nbsp;</span></div></div>
+        <div class="db-cal-c pad"><div class="db-cal-d"><span class="db-cal-dn">&nbsp;</span></div></div>
+        <div class="db-cal-c pad"><div class="db-cal-d"><span class="db-cal-dn">&nbsp;</span></div></div>
+      </div>
+      <div class="db-lg" style="padding:14px 20px;margin-top:0">
+        <div class="db-lg-i"><span class="db-lg-sw" style="background:#b9c6cb"></span> Scheduled</div>
+        <div class="db-lg-i"><span class="db-lg-sw" style="background:var(--warn)"></span> Assigned</div>
+        <div class="db-lg-i"><span class="db-lg-sw" style="background:var(--tl)"></span> In progress</div>
+        <div class="db-lg-i"><span class="db-lg-sw" style="background:var(--ok)"></span> Completed</div>
+        <div class="db-lg-i"><span class="db-lg-sw" style="background:var(--bad)"></span> Overdue</div>
+      </div>
+    </div>
+
+    <!-- Unassigned queue -->
+    <div class="db-panel" id="unassigned">
+      <div class="db-panel-hd">
+        <div>
+          <div class="db-panel-ey">Needs action</div>
+          <h2>Visits without an engineer</h2>
+        </div>
+        <div class="db-panel-hd-r">
+          <button class="db-btn db-btn-o" style="padding:8px 14px;font-size:11.5px">Auto-assign by zone</button>
+        </div>
+      </div>
+      <div class="db-panel-bd flush">
+        <div class="db-tw">
+          <table class="db-tbl">
+            <thead>
+              <tr><th>Date</th><th>Customer &amp; site</th><th>Asset</th><th>Frequency</th><th>Zone</th><th>Suggested engineer</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong style="font-family:'Inter',sans-serif;color:var(--tx);font-weight:800">11 Sep</strong></td>
+                <td><div class="db-cell-2"><strong>Ajman Free Zone ETP</strong><span>Ajman Free Zone, Ajman</span></div></td>
+                <td><span class="db-asset">ETP 150 KLD</span></td>
+                <td>Monthly</td>
+                <td>Northern Emirates</td>
+                <td><div class="db-eng"><div class="db-eng-av">JT</div><span>Jomon Thomas</span></div></td>
+                <td><button class="db-btn" style="padding:7px 14px;font-size:11.5px;box-shadow:none">Assign</button></td>
+              </tr>
+              <tr>
+                <td><strong style="font-family:'Inter',sans-serif;color:var(--tx);font-weight:800">18 Sep</strong></td>
+                <td><div class="db-cell-2"><strong>Fujairah Port Utility</strong><span>Port Area, Fujairah</span></div></td>
+                <td><span class="db-asset">STP 300 KLD</span></td>
+                <td>Monthly</td>
+                <td>Northern Emirates</td>
+                <td><div class="db-eng"><div class="db-eng-av">JT</div><span>Jomon Thomas</span></div></td>
+                <td><button class="db-btn" style="padding:7px 14px;font-size:11.5px;box-shadow:none">Assign</button></td>
+              </tr>
+              <tr>
+                <td><strong style="font-family:'Inter',sans-serif;color:var(--tx);font-weight:800">22 Sep</strong></td>
+                <td><div class="db-cell-2"><strong>Mussafah Camp 3 STP</strong><span>Mussafah ICAD 2, Abu Dhabi</span></div></td>
+                <td><span class="db-asset">STP 500 KLD</span></td>
+                <td>Monthly</td>
+                <td>Abu Dhabi</td>
+                <td><div class="db-eng"><div class="db-eng-av">PN</div><span>Prakash Nair</span></div></td>
+                <td><button class="db-btn" style="padding:7px 14px;font-size:11.5px;box-shadow:none">Assign</button></td>
+              </tr>
+              <tr>
+                <td><strong style="font-family:'Inter',sans-serif;color:var(--tx);font-weight:800">25 Sep</strong></td>
+                <td><div class="db-cell-2"><strong>Umm Al Quwain Factory</strong><span>UAQ Industrial Area 2</span></div></td>
+                <td><span class="db-asset">Coagulant Dosing</span></td>
+                <td>Quarterly</td>
+                <td>Northern Emirates</td>
+                <td><div class="db-eng"><div class="db-eng-av">SS</div><span>Shameer Salim</span></div></td>
+                <td><button class="db-btn" style="padding:7px 14px;font-size:11.5px;box-shadow:none">Assign</button></td>
+              </tr>
+              <tr>
+                <td><strong style="font-family:'Inter',sans-serif;color:var(--tx);font-weight:800">30 Sep</strong></td>
+                <td><div class="db-cell-2"><strong>Jebel Ali Port Utility</strong><span>Jebel Ali Port, Dubai</span></div></td>
+                <td><span class="db-asset">Booster Pump Set</span></td>
+                <td>Quarterly</td>
+                <td>Dubai West</td>
+                <td><div class="db-eng"><div class="db-eng-av">AV</div><span>Anil Varghese</span></div></td>
+                <td><button class="db-btn" style="padding:7px 14px;font-size:11.5px;box-shadow:none">Assign</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

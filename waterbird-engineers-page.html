@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Water Bird — Field Engineers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#114c5f;--tl:#1e88a8;--tp:#eaf4f7;
+  --tx:#0f2027;--mu:#5a6b72;
+  --bd:rgba(17,76,95,.09);--bh:rgba(30,136,168,.28);
+  --sh-sm:0 4px 16px rgba(17,76,95,.08);
+  --sh-md:0 14px 40px rgba(17,76,95,.11);
+  --ok:#1f9d6b;--warn:#c67c1e;--bad:#c0483f;
+  --sbw:246px;
+}
+body{font-family:'Poppins',sans-serif;background:#f0f5f7;color:var(--tx);-webkit-font-smoothing:antialiased}
+
+/* ══════ SIDEBAR ══════ */
+.db-sb{position:fixed;top:0;left:0;bottom:0;width:var(--sbw);background:#070f14;z-index:100;display:flex;flex-direction:column;overflow:hidden;isolation:isolate}
+.db-sb::before{content:"";position:absolute;inset:0;z-index:0;background:radial-gradient(500px 600px at 0% 30%,rgba(17,76,95,.5),transparent 70%)}
+.db-sb::after{content:"";position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(126,212,232,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(126,212,232,.03) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse at 50% 40%,#000 20%,transparent 80%)}
+.db-sb-in{position:relative;z-index:2;display:flex;flex-direction:column;height:100%}
+
+.db-brand{padding:22px 20px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.db-brand-mark{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--teal),var(--tl));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.db-brand-mark svg{width:22px;height:22px;stroke:#fff;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-brand-name{font-family:'Inter',sans-serif;font-size:15px;font-weight:800;color:#fff;letter-spacing:-.3px;line-height:1.1}
+.db-brand-sub{font-family:'Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:rgba(126,212,232,.55);margin-top:3px}
+
+.db-nav{flex:1;overflow-y:auto;padding:16px 12px}
+.db-nav::-webkit-scrollbar{width:0}
+.db-nav-grp{font-family:'Inter',sans-serif;font-size:9px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:rgba(200,220,226,.3);padding:14px 10px 8px}
+.db-nav-grp:first-child{padding-top:0}
+.db-nav a{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:9px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:rgba(200,220,226,.62);text-decoration:none;transition:background .18s,color .18s;position:relative;margin-bottom:1px}
+.db-nav a:hover{background:rgba(255,255,255,.045);color:#fff}
+.db-nav a.active{background:linear-gradient(90deg,rgba(30,136,168,.22),rgba(30,136,168,.06));color:#fff}
+.db-nav a.active::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:#7ed4e8}
+.db-nav a svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.85}
+.db-nav a.active svg{opacity:1;stroke:#7ed4e8}
+.db-nav-pill{margin-left:auto;font-size:10px;font-weight:800;padding:1px 7px;border-radius:9px;background:rgba(192,72,63,.9);color:#fff;font-family:'Inter',sans-serif}
+.db-nav-pill.q{background:rgba(255,255,255,.1);color:rgba(200,220,226,.7)}
+
+.db-sb-foot{padding:14px 16px;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0}
+.db-sb-user{display:flex;align-items:center;gap:10px}
+.db-sb-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--tl),#7ed4e8);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:#070f14;flex-shrink:0}
+.db-sb-user-n{font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;color:#fff;line-height:1.2}
+.db-sb-user-r{font-family:'Inter',sans-serif;font-size:10px;color:rgba(200,220,226,.45);margin-top:2px}
+
+
+/* ══════ NAV: pages not built yet ══════ */
+.db-nav a.db-nav-soon{opacity:.42;cursor:not-allowed}
+.db-nav a.db-nav-soon:hover{background:none;color:rgba(200,220,226,.62)}
+
+/* ══════ SHELL ══════ */
+.db-main{margin-left:var(--sbw);min-height:100vh}
+
+.db-top{background:#fff;border-bottom:1px solid var(--bd);padding:0 26px;height:64px;display:flex;align-items:center;gap:20px;position:sticky;top:0;z-index:90}
+.db-burger{width:36px;height:36px;border-radius:9px;border:1px solid var(--bd);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .2s}
+.db-burger:hover{background:var(--tp)}
+.db-burger svg{width:17px;height:17px;stroke:var(--teal);stroke-width:2;fill:none;stroke-linecap:round}
+.db-crumb{font-family:'Inter',sans-serif;font-size:12px;color:var(--mu);display:flex;align-items:center;gap:7px}
+.db-crumb a{color:var(--mu);text-decoration:none}
+.db-crumb a:hover{color:var(--teal)}
+.db-crumb .sep{color:var(--bd)}
+.db-crumb strong{color:var(--teal);font-weight:700}
+.db-top-r{margin-left:auto;display:flex;align-items:center;gap:10px}
+.db-search{display:flex;align-items:center;gap:8px;background:#f8fbfc;border:1px solid var(--bd);border-radius:9px;padding:8px 13px;width:250px;transition:border-color .2s}
+.db-search:focus-within{border-color:var(--tl)}
+.db-search svg{width:14px;height:14px;stroke:var(--mu);stroke-width:2;fill:none;stroke-linecap:round;flex-shrink:0}
+.db-search input{border:none;background:none;outline:none;font-family:'Poppins',sans-serif;font-size:12.5px;color:var(--tx);width:100%}
+.db-search input::placeholder{color:var(--mu);opacity:.7}
+.db-ico-btn{width:36px;height:36px;border-radius:9px;border:1px solid var(--bd);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:background .2s}
+.db-ico-btn:hover{background:var(--tp)}
+.db-ico-btn svg{width:16px;height:16px;stroke:var(--teal);stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-ico-btn .dot{position:absolute;top:7px;right:8px;width:6px;height:6px;border-radius:50%;background:var(--bad);border:1.5px solid #fff}
+
+.db-body{padding:26px}
+
+/* ══════ PAGE HEAD ══════ */
+.db-ph{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+.db-ph-ey{display:inline-flex;align-items:center;gap:8px;background:var(--tp);border:1px solid rgba(17,76,95,.12);color:var(--teal);font-family:'Inter',sans-serif;font-size:10px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-bottom:11px}
+.db-ph-ey::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--tl)}
+.db-ph h1{font-family:'Inter',sans-serif;font-size:27px;font-weight:600;letter-spacing:-1px;color:var(--tx);line-height:1.1}
+.db-ph h1 em{font-style:normal;color:var(--tl)}
+.db-ph-sub{font-size:13px;color:var(--mu);margin-top:7px}
+.db-ph-act{display:flex;gap:9px;flex-shrink:0}
+.db-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--teal),var(--tl));color:#fff;padding:10px 19px;border-radius:8px;font-family:'Inter',sans-serif;font-size:12.5px;font-weight:800;text-decoration:none;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(17,76,95,.2);transition:transform .2s,box-shadow .2s}
+.db-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(17,76,95,.3)}
+.db-btn svg{width:14px;height:14px;stroke:#fff;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-btn-o{background:#fff;color:var(--teal);border:1px solid var(--bd);box-shadow:none}
+.db-btn-o:hover{background:var(--tp);transform:none;box-shadow:none}
+.db-btn-o svg{stroke:var(--teal)}
+
+/* ══════ KPI ROW ══════ */
+.db-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+.db-kpi{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:20px;position:relative;overflow:hidden;transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s,border-color .25s}
+.db-kpi:hover{transform:translateY(-3px);box-shadow:var(--sh-md);border-color:var(--bh)}
+.db-kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.22,1,.36,1)}
+.db-kpi:hover::before{transform:scaleX(1)}
+.db-kpi.k-due::before{background:linear-gradient(90deg,var(--teal),var(--tl))}
+.db-kpi.k-open::before{background:linear-gradient(90deg,#c67c1e,#e0a martial)}
+.db-kpi.k-open::before{background:linear-gradient(90deg,#c67c1e,#e5b25f)}
+.db-kpi.k-done::before{background:linear-gradient(90deg,#1f9d6b,#4ec795)}
+.db-kpi.k-over::before{background:linear-gradient(90deg,#c0483f,#e07a70)}
+.db-kpi-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:15px}
+.db-kpi-lbl{font-family:'Inter',sans-serif;font-size:10px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--mu);line-height:1.4;max-width:150px}
+.db-kpi-ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .3s}
+.db-kpi:hover .db-kpi-ic{transform:scale(1.08) rotate(-4deg)}
+.db-kpi-ic svg{width:18px;height:18px;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.k-due .db-kpi-ic{background:var(--tp)}.k-due .db-kpi-ic svg{stroke:var(--teal)}
+.k-open .db-kpi-ic{background:rgba(198,124,30,.11)}.k-open .db-kpi-ic svg{stroke:var(--warn)}
+.k-done .db-kpi-ic{background:rgba(31,157,107,.11)}.k-done .db-kpi-ic svg{stroke:var(--ok)}
+.k-over .db-kpi-ic{background:rgba(192,72,63,.1)}.k-over .db-kpi-ic svg{stroke:var(--bad)}
+.db-kpi-n{font-family:'Inter',sans-serif;font-size:33px;font-weight:800;letter-spacing:-1.6px;color:var(--tx);line-height:1}
+.db-kpi-n small{font-size:14px;font-weight:700;color:var(--mu);letter-spacing:0;margin-left:3px}
+.db-kpi-ft{display:flex;align-items:center;gap:6px;margin-top:11px;padding-top:11px;border-top:1px solid var(--bd);font-family:'Inter',sans-serif;font-size:11px;color:var(--mu)}
+.db-trend{display:inline-flex;align-items:center;gap:3px;font-weight:800;font-size:11px}
+.db-trend svg{width:11px;height:11px;stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-trend.up{color:var(--ok)}.db-trend.up svg{stroke:var(--ok)}
+.db-trend.dn{color:var(--bad)}.db-trend.dn svg{stroke:var(--bad)}
+.db-trend.fl{color:var(--mu)}.db-trend.fl svg{stroke:var(--mu)}
+
+/* ══════ SECONDARY STRIP ══════ */
+.db-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
+.db-mini{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:15px 17px;display:flex;align-items:center;gap:13px;transition:border-color .25s,box-shadow .3s}
+.db-mini:hover{border-color:var(--bh);box-shadow:var(--sh-sm)}
+.db-mini-ic{width:34px;height:34px;border-radius:9px;background:var(--tp);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.db-mini-ic svg{width:16px;height:16px;stroke:var(--teal);stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-mini-n{font-family:'Inter',sans-serif;font-size:19px;font-weight:800;color:var(--tx);letter-spacing:-.7px;line-height:1}
+.db-mini-l{font-family:'Inter',sans-serif;font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--mu);margin-top:4px}
+
+/* ══════ GRID ══════ */
+.db-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.db-grid-3{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+
+/* ══════ PANEL ══════ */
+.db-panel{background:#fff;border:1px solid var(--bd);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.db-panel-hd{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.db-panel-ey{font-family:'Inter',sans-serif;font-size:9px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:var(--tl);margin-bottom:4px}
+.db-panel-hd h2{font-family:'Inter',sans-serif;font-size:16px;font-weight:700;letter-spacing:-.35px;color:var(--tx);line-height:1.2}
+.db-panel-hd-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+.db-link{display:inline-flex;align-items:center;gap:5px;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:800;color:var(--teal);text-decoration:none;border-bottom:1.5px solid transparent;transition:border-color .2s,gap .2s}
+.db-link:hover{color:var(--tl);border-color:var(--tl);gap:8px}
+.db-link svg{width:11px;height:11px;stroke:currentColor;stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.db-link:hover svg{transform:translateX(2px)}
+.db-seg{display:flex;background:#f8fbfc;border:1px solid var(--bd);border-radius:8px;padding:2px;gap:2px}
+.db-seg button{border:none;background:none;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--mu);padding:5px 11px;border-radius:6px;cursor:pointer;transition:background .2s,color .2s}
+.db-seg button.on{background:var(--teal);color:#fff}
+.db-seg button:not(.on):hover{color:var(--teal)}
+.db-panel-bd{padding:20px;flex:1}
+.db-panel-bd.flush{padding:0}
+
+/* ══════ TABLE ══════ */
+.db-tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.db-tbl{width:100%;border-collapse:collapse;min-width:880px}
+.db-tbl thead th{background:#f8fbfc;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;color:var(--mu);text-align:left;padding:11px 20px;white-space:nowrap;border-bottom:1px solid var(--bd)}
+.db-tbl tbody td{padding:13px 20px;font-size:13px;color:var(--mu);border-bottom:1px solid var(--bd);vertical-align:middle;white-space:nowrap}
+.db-tbl tbody tr{transition:background .15s;cursor:pointer}
+.db-tbl tbody tr:hover{background:var(--tp)}
+.db-tbl tbody tr:last-child td{border-bottom:none}
+.db-ref{font-family:'Inter',sans-serif;font-weight:800;font-size:12px;color:var(--teal)}
+.db-cell-2{display:flex;flex-direction:column;gap:2px}
+.db-cell-2 strong{font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;color:var(--tx)}
+.db-cell-2 span{font-size:11px;color:var(--mu)}
+.db-asset{display:inline-flex;align-items:center;gap:6px;background:var(--tp);border:1px solid rgba(17,76,95,.09);border-radius:5px;padding:3px 9px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--teal)}
+.db-eng{display:flex;align-items:center;gap:8px}
+.db-eng-av{width:27px;height:27px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--tl));display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;color:#fff;flex-shrink:0}
+.db-eng span{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--tx)}
+.db-chip{display:inline-flex;align-items:center;gap:5px;font-family:'Inter',sans-serif;font-size:10.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.db-chip::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.db-chip.s-prog{background:rgba(30,136,168,.1);color:#166b85}
+.db-chip.s-open{background:rgba(198,124,30,.11);color:#9e5f10}
+.db-chip.s-done{background:rgba(31,157,107,.11);color:#137a51}
+.db-chip.s-over{background:rgba(192,72,63,.1);color:#a13a32}
+.db-chip.s-sched{background:rgba(17,76,95,.07);color:var(--mu)}
+
+/* ══════ CHARTS ══════ */
+.db-chart-mt{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.db-chart-n{font-family:'Inter',sans-serif;font-size:27px;font-weight:800;letter-spacing:-1.2px;color:var(--tx);line-height:1}
+.db-chart-cap{font-size:11.5px;color:var(--mu)}
+.db-chart-svg{width:100%;height:auto;display:block;overflow:visible}
+.db-lg{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--bd)}
+.db-lg-i{display:flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:var(--mu)}
+.db-lg-sw{width:11px;height:11px;border-radius:3px;flex-shrink:0}
+
+/* ══════ BAR LIST ══════ */
+.db-bl{display:flex;flex-direction:column;gap:15px}
+.db-bl-i{display:flex;flex-direction:column;gap:7px}
+.db-bl-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.db-bl-lbl{font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;color:var(--tx)}
+.db-bl-v{font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:var(--teal)}
+.db-bl-v small{font-weight:600;color:var(--mu);font-size:11px}
+.db-bl-tr{height:7px;background:#eef4f6;border-radius:4px;overflow:hidden}
+.db-bl-fl{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--teal),var(--tl))}
+
+/* ══════ ENGINEER LIST ══════ */
+.db-el{display:flex;flex-direction:column}
+.db-el-i{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:13px 20px;border-bottom:1px solid var(--bd);transition:background .15s}
+.db-el-i:last-child{border-bottom:none}
+.db-el-i:hover{background:var(--tp)}
+.db-el-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--tl));display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;position:relative}
+.db-el-av::after{content:"";position:absolute;bottom:-1px;right:-1px;width:11px;height:11px;border-radius:50%;border:2px solid #fff}
+.db-el-av.on::after{background:var(--ok)}
+.db-el-av.busy::after{background:var(--warn)}
+.db-el-av.off::after{background:#b9c6cb}
+.db-el-n{font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:var(--tx)}
+.db-el-m{font-size:11px;color:var(--mu);margin-top:2px}
+.db-el-r{text-align:right;flex-shrink:0}
+.db-el-c{font-family:'Inter',sans-serif;font-size:15px;font-weight:800;color:var(--teal);line-height:1}
+.db-el-cl{font-family:'Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--mu);margin-top:3px}
+
+/* ══════ RENEWALS ══════ */
+.db-rn{display:flex;flex-direction:column}
+.db-rn-i{padding:14px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:13px;transition:background .15s}
+.db-rn-i:last-child{border-bottom:none}
+.db-rn-i:hover{background:var(--tp)}
+.db-rn-d{width:44px;flex-shrink:0;text-align:center;background:var(--tp);border-radius:9px;padding:7px 0}
+.db-rn-dd{font-family:'Inter',sans-serif;font-size:16px;font-weight:800;color:var(--teal);line-height:1}
+.db-rn-dm{font-family:'Inter',sans-serif;font-size:9px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--mu);margin-top:2px}
+.db-rn-b{flex:1;min-width:0}
+.db-rn-n{font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.db-rn-m{font-size:11px;color:var(--mu);margin-top:3px}
+.db-rn-v{font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:var(--teal);flex-shrink:0}
+
+/* ══════ ALERT ══════ */
+.db-alert{background:#fff;border:1px solid rgba(192,72,63,.2);border-left:4px solid var(--bad);border-radius:0 12px 12px 0;padding:14px 18px;display:flex;align-items:center;gap:13px;margin-bottom:20px}
+.db-alert-ic{width:34px;height:34px;border-radius:9px;background:rgba(192,72,63,.09);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.db-alert-ic svg{width:17px;height:17px;stroke:var(--bad);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-alert-t{font-family:'Inter',sans-serif;font-size:13px;font-weight:800;color:var(--tx)}
+.db-alert-s{font-size:12px;color:var(--mu);margin-top:2px}
+.db-alert a{margin-left:auto;flex-shrink:0}
+
+/* ══════ RESPONSIVE ══════ */
+@media(max-width:1400px){
+  .db-kpis{grid-template-columns:repeat(2,1fr)}
+  .db-strip{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:1160px){
+  :root{--sbw:0px}
+  .db-sb{transform:translateX(-100%);transition:transform .3s}
+  .db-sb.open{transform:none;width:246px}
+  .db-main{margin-left:0}
+  .db-grid,.db-grid-3{grid-template-columns:1fr}
+  .db-search{width:180px}
+}
+@media(max-width:760px){
+  .db-kpis{grid-template-columns:1fr}
+  .db-strip{grid-template-columns:1fr 1fr}
+  .db-body{padding:18px}
+  .db-top{padding:0 18px}
+  .db-search{display:none}
+  .db-ph-act{width:100%}
+}
+
+/* ══════ SHARED ADDITIONS (v2 pages) ══════ */
+.db-tbl tbody td,.db-kpi-n,.db-mini-n,.db-el-c,.db-bl-v{font-variant-numeric:tabular-nums}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--tl);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Filter bar */
+.db-fb{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.db-fb-lbl{display:inline-flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;color:var(--mu);padding-right:4px}
+.db-fb-lbl svg{width:14px;height:14px;stroke:var(--teal);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-sel{position:relative;display:inline-flex}
+.db-sel select{appearance:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:var(--tx);background:#f8fbfc;border:1px solid var(--bd);border-radius:8px;padding:8px 30px 8px 12px;cursor:pointer;transition:border-color .2s,background .2s}
+.db-sel select:hover{border-color:var(--bh);background:var(--tp)}
+.db-sel::after{content:"";position:absolute;right:12px;top:50%;width:6px;height:6px;border-right:1.8px solid var(--mu);border-bottom:1.8px solid var(--mu);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+.db-fb-clr{margin-left:auto;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:700;color:var(--mu);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.db-fb-clr:hover{color:var(--bad)}
+
+/* Tabs with counts */
+.db-tabs{display:flex;gap:2px;background:#fff;border:1px solid var(--bd);border-radius:12px;padding:5px;margin-bottom:16px;overflow-x:auto}
+.db-tab{display:inline-flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;color:var(--mu);background:none;border:none;padding:9px 15px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:background .2s,color .2s}
+.db-tab:hover{background:var(--tp);color:var(--teal)}
+.db-tab.on{background:var(--teal);color:#fff}
+.db-tab-c{font-size:10.5px;font-weight:800;padding:1px 7px;border-radius:9px;background:rgba(17,76,95,.08);color:var(--mu);font-variant-numeric:tabular-nums}
+.db-tab.on .db-tab-c{background:rgba(255,255,255,.18);color:#fff}
+.db-tab.warn .db-tab-c{background:rgba(192,72,63,.12);color:#a13a32}
+
+/* Pagination */
+.db-pg{display:flex;align-items:center;gap:12px;padding:14px 20px;border-top:1px solid var(--bd);flex-wrap:wrap}
+.db-pg-i{font-family:'Inter',sans-serif;font-size:11.5px;color:var(--mu);font-variant-numeric:tabular-nums}
+.db-pg-c{margin-left:auto;display:flex;gap:4px}
+.db-pg-b{min-width:32px;height:32px;padding:0 9px;border:1px solid var(--bd);background:#fff;border-radius:8px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:var(--mu);cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+.db-pg-b:hover:not(:disabled){background:var(--tp);color:var(--teal);border-color:var(--bh)}
+.db-pg-b.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.db-pg-b:disabled{opacity:.4;cursor:not-allowed}
+.db-pg-b svg{width:13px;height:13px;stroke:currentColor;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* Priority + type chips */
+.db-pri{display:inline-flex;align-items:center;gap:5px;font-family:'Inter',sans-serif;font-size:10.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase}
+.db-pri::before{content:"";width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;flex-shrink:0}
+.db-pri.p-hi{color:#a13a32}.db-pri.p-hi::before{border-bottom:7px solid #c0483f}
+.db-pri.p-md{color:#9e5f10}.db-pri.p-md::before{border-bottom:7px solid #c67c1e}
+.db-pri.p-lo{color:var(--mu)}.db-pri.p-lo::before{border-bottom:7px solid #b9c6cb}
+.db-type{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--mu)}
+.db-type b{display:block;font-size:11.5px;font-weight:800;color:var(--tx)}
+
+/* Row actions */
+.db-row-act{width:28px;height:28px;border-radius:7px;border:1px solid transparent;background:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s}
+.db-row-act:hover{background:#fff;border-color:var(--bd)}
+.db-row-act svg{width:15px;height:15px;stroke:var(--mu);stroke-width:2.2;fill:none;stroke-linecap:round}
+.db-cbx{width:15px;height:15px;accent-color:var(--teal);cursor:pointer}
+
+/* Empty state */
+.db-empty{padding:44px 24px;text-align:center}
+.db-empty-ic{width:52px;height:52px;border-radius:14px;background:var(--tp);display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.db-empty-ic svg{width:24px;height:24px;stroke:var(--teal);stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.db-empty h3{font-family:'Inter',sans-serif;font-size:14px;font-weight:700;color:var(--tx);margin-bottom:5px}
+.db-empty p{font-size:12.5px;color:var(--mu);max-width:340px;margin:0 auto 16px;line-height:1.6}
+
+
+/* ══════ ENGINEER CARDS ══════ */
+.db-ecs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+@media(max-width:1400px){.db-ecs{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.db-ecs{grid-template-columns:1fr}}
+
+.db-ec{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:18px;position:relative;overflow:hidden;transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s,border-color .25s}
+.db-ec:hover{transform:translateY(-3px);box-shadow:var(--sh-md);border-color:var(--bh)}
+.db-ec::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--teal),var(--tl));transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.22,1,.36,1)}
+.db-ec:hover::before{transform:scaleX(1)}
+.db-ec.dnd::before{background:linear-gradient(90deg,#c67c1e,#e5b25f)}
+.db-ec.off::before{background:linear-gradient(90deg,#93a4aa,#b9c6cb)}
+
+.db-ec-top{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;margin-bottom:15px}
+.db-ec-av{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--tl));display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:14px;font-weight:800;color:#fff;flex-shrink:0;position:relative}
+.db-ec-av::after{content:"";position:absolute;bottom:0;right:0;width:13px;height:13px;border-radius:50%;border:2.5px solid #fff}
+.db-ec-av.on::after{background:var(--ok)}
+.db-ec-av.busy::after{background:var(--warn)}
+.db-ec-av.leave::after{background:#b9c6cb}
+.db-ec-n{font-family:'Inter',sans-serif;font-size:14px;font-weight:800;letter-spacing:-.3px;color:var(--tx);line-height:1.2}
+.db-ec-r{font-size:11.5px;color:var(--mu);margin-top:3px}
+.db-ec-z{display:inline-flex;align-items:center;gap:5px;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;color:var(--teal);background:var(--tp);border-radius:5px;padding:3px 8px;margin-top:7px}
+.db-ec-z svg{width:11px;height:11px;stroke:var(--teal);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+.db-ec-sk{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:15px}
+.db-tag{font-family:'Inter',sans-serif;font-size:10px;font-weight:700;color:var(--mu);background:#f8fbfc;border:1px solid var(--bd);border-radius:5px;padding:3px 8px}
+.db-tag.cert{color:var(--teal);background:var(--tp);border-color:rgba(17,76,95,.12)}
+
+.db-ec-load{margin-bottom:14px}
+.db-ec-load-t{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:7px}
+.db-ec-load-l{font-family:'Inter',sans-serif;font-size:9.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--mu)}
+.db-ec-load-v{font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:var(--teal);font-variant-numeric:tabular-nums}
+.db-ec-load-v small{font-weight:600;color:var(--mu);font-size:11px}
+.db-ec-bar{height:7px;background:#eef4f6;border-radius:4px;overflow:hidden;display:flex;gap:1.5px}
+.db-ec-bar i{height:100%;display:block}
+.db-ec-bar i.d{background:var(--ok)}
+.db-ec-bar i.p{background:var(--tl)}
+.db-ec-bar i.o{background:var(--warn)}
+.db-ec-cap{font-size:10.5px;color:var(--mu);margin-top:6px}
+.db-ec-cap b{color:#a13a32;font-weight:700}
+
+.db-ec-st{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bd);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.db-ec-st-i{background:#f8fbfc;padding:10px 8px;text-align:center}
+.db-ec-st-v{font-family:'Inter',sans-serif;font-size:15px;font-weight:800;color:var(--tx);letter-spacing:-.5px;line-height:1;font-variant-numeric:tabular-nums}
+.db-ec-st-l{font-family:'Inter',sans-serif;font-size:8.5px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--mu);margin-top:5px;line-height:1.3}
+.db-ec-ft{display:flex;align-items:center;gap:10px;padding-top:13px;border-top:1px solid var(--bd)}
+.db-ec-ft .db-link{font-size:11px}
+.db-ec-ph{margin-left:auto;display:flex;gap:6px}
+.db-ec-ph a{width:29px;height:29px;border-radius:8px;border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s}
+.db-ec-ph a:hover{background:var(--tp);border-color:var(--bh)}
+.db-ec-ph svg{width:14px;height:14px;stroke:var(--teal);stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* Leave note */
+.db-ec-leave{background:rgba(198,124,30,.07);border:1px dashed rgba(198,124,30,.28);border-radius:9px;padding:10px 12px;font-size:11.5px;color:#9e5f10;font-weight:500;margin-bottom:14px}
+
+/* Cert expiry list */
+.db-cx{display:flex;flex-direction:column}
+.db-cx-i{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:13px 20px;border-bottom:1px solid var(--bd)}
+.db-cx-i:last-child{border-bottom:none}
+.db-cx-d{width:46px;flex-shrink:0;text-align:center;background:var(--tp);border-radius:9px;padding:7px 0}
+.db-cx-dd{font-family:'Inter',sans-serif;font-size:15px;font-weight:800;color:var(--teal);line-height:1;font-variant-numeric:tabular-nums}
+.db-cx-dm{font-family:'Inter',sans-serif;font-size:8.5px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--mu);margin-top:2px}
+.db-cx-i.soon .db-cx-d{background:rgba(192,72,63,.08)}
+.db-cx-i.soon .db-cx-dd{color:#a13a32}
+.db-cx-n{font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;color:var(--tx)}
+.db-cx-m{font-size:11px;color:var(--mu);margin-top:3px}
+
+</style>
+</head>
+<body>
+<aside class="db-sb" id="sb">
+<div class="db-sb-in">
+  <div class="db-brand">
+    <div class="db-brand-mark">
+      <svg viewBox="0 0 24 24"><path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0c0-4.5-7-13-7-13z"/><circle cx="12" cy="15" r="2.5"/></svg>
+    </div>
+    <div>
+      <div class="db-brand-name">Water Bird</div>
+      <div class="db-brand-sub">AMC Platform</div>
+    </div>
+  </div>
+
+  <nav class="db-nav">
+    <div class="db-nav-grp">Overview</div>
+    <a href="waterbird-amc-dashboard.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg> Dashboard</a>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Reports</a>
+
+    <div class="db-nav-grp">Contracts</div>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> AMC Contracts <span class="db-nav-pill q">312</span></a>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.2-8.6"/><polyline points="21 3 21 9 15 9"/></svg> Renewals <span class="db-nav-pill">18</span></a>
+
+    <div class="db-nav-grp">Field Operations</div>
+    <a href="waterbird-visit-schedule-page.html"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Visit Schedule</a>
+    <a href="waterbird-work-orders-page.html"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> Work Orders <span class="db-nav-pill">7</span></a>
+    <a href="waterbird-inspections-page.html"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Inspections</a>
+    <a href="waterbird-engineers-page.html" class="active"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Engineers</a>
+
+    <div class="db-nav-grp">Assets &amp; Sites</div>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Customers</a>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Sites</a>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3S3 13.66 3 12"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg> Assets</a>
+
+    <div class="db-nav-grp">Inventory</div>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v7l-4 8h12l-4-8V3"/><line x1="6" y1="16" x2="18" y2="16"/></svg> Chemicals</a>
+    <a href="#" class="db-nav-soon"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/></svg> Spares &amp; Consumables</a>
+  </nav>
+
+  <div class="db-sb-foot">
+    <div class="db-sb-user">
+      <div class="db-sb-av">RB</div>
+      <div>
+        <div class="db-sb-user-n">Renjish Basheer</div>
+        <div class="db-sb-user-r">Service Manager</div>
+      </div>
+    </div>
+  </div>
+</div>
+</aside>
+
+<div class="db-main">
+  <header class="db-top">
+    <button class="db-burger" onclick="document.getElementById('sb').classList.toggle('open')" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="db-crumb"><a href="waterbird-amc-dashboard.html">Home</a><span class="sep">/</span><a href="waterbird-visit-schedule-page.html">Field Operations</a><span class="sep">/</span><strong>Engineers</strong></div>
+    <div class="db-top-r">
+      <div class="db-search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" placeholder="Search engineers, zones, skills…">
+      </div>
+      <button class="db-ico-btn" aria-label="Notifications"><span class="dot"></span><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+      <button class="db-ico-btn" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6h.09A1.65 1.65 0 0 0 10 3.09V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+    </div>
+  </header>
+
+  <div class="db-body">
+    <!-- Page head -->
+    <div class="db-ph">
+      <div>
+        <span class="db-ph-ey">Field Operations</span>
+        <h1>Field <em>Engineers</em></h1>
+        <p class="db-ph-sub">24 engineers across 5 zones &middot; 21 on duty today &middot; 1 over capacity, 5 visits still unassigned</p>
+      </div>
+      <div class="db-ph-act">
+        <button class="db-btn db-btn-o"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Duty roster</button>
+        <button class="db-btn"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> Add engineer</button>
+      </div>
+    </div>
+
+    <!-- Counters -->
+    <div class="db-strip">
+      <div class="db-mini">
+        <div class="db-mini-ic"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div><div class="db-mini-n">24</div><div class="db-mini-l">Engineers</div></div>
+      </div>
+      <div class="db-mini">
+        <div class="db-mini-ic"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <div><div class="db-mini-n">21</div><div class="db-mini-l">On duty today</div></div>
+      </div>
+      <div class="db-mini">
+        <div class="db-mini-ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div><div class="db-mini-n">3</div><div class="db-mini-l">On leave</div></div>
+      </div>
+      <div class="db-mini">
+        <div class="db-mini-ic"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
+        <div><div class="db-mini-n">4.4</div><div class="db-mini-l">Avg visits / day</div></div>
+      </div>
+      <div class="db-mini">
+        <div class="db-mini-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div><div class="db-mini-n">94%</div><div class="db-mini-l">On-time arrival</div></div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="db-fb">
+      <span class="db-fb-lbl"><svg viewBox="0 0 24 24"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg> Filter</span>
+      <div class="db-sel"><select><option>All zones</option><option>Dubai Central</option><option>Dubai West</option><option>Dubai East &amp; Sharjah</option><option>Abu Dhabi &amp; Al Ain</option><option>Northern Emirates</option></select></div>
+      <div class="db-sel"><select><option>All skills</option><option>STP</option><option>ETP</option><option>Booster sets</option><option>Dosing systems</option><option>Tank cleaning</option><option>PLC panels</option></select></div>
+      <div class="db-sel"><select><option>All availability</option><option>Available</option><option>At capacity</option><option>On leave</option></select></div>
+      <div class="db-sel"><select><option>Sort by load</option><option>Sort by name</option><option>Sort by on-time %</option><option>Sort by zone</option></select></div>
+      <button class="db-fb-clr">Clear filters</button>
+    </div>
+
+    <!-- Engineer cards -->
+    <div class="db-ecs">
+      <div class="db-ec">
+        <div class="db-ec-top">
+          <div class="db-ec-av on">RK</div>
+          <div>
+            <div class="db-ec-n">Rajesh Kumar</div>
+            <div class="db-ec-r">Senior Service Engineer</div>
+            <div class="db-ec-z"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Dubai Central</div>
+          </div>
+          <button class="db-row-act" aria-label="Actions for Rajesh Kumar"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        </div>
+        <div class="db-ec-sk"><span class="db-tag">STP</span><span class="db-tag">Dosing systems</span><span class="db-tag">PLC panels</span><span class="db-tag cert">ADWEA cert</span></div>
+        <div class="db-ec-load">
+          <div class="db-ec-load-t">
+            <span class="db-ec-load-l">Today&rsquo;s load</span>
+            <span class="db-ec-load-v">4<small> / 5 visits</small></span>
+          </div>
+          <div class="db-ec-bar"><i class="d" style="width:20.0000%"></i><i class="d" style="width:20.0000%"></i><i class="d" style="width:20.0000%"></i><i class="p" style="width:20.0000%"></i><i class="o" style="width:20.0000%"></i></div>
+          <div class="db-ec-cap">5 of 6 slots used</div>
+        </div>
+        <div class="db-ec-st">
+          <div class="db-ec-st-i"><div class="db-ec-st-v">236</div><div class="db-ec-st-l">Visits YTD</div></div>
+          <div class="db-ec-st-i"><div class="db-ec-st-v">98%</div><div class="db-ec-st-l">On time</div></div>
+          <div class="db-ec-st-i"><div class="db-ec-st-v">4.6</div><div class="db-ec-st-l">Avg / day</div></div>
+        </div>
+        <div class="db-ec-ft">
+          <a href="waterbird-visit-schedule-page.html" class="db-link">View schedule <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          <div class="db-ec-ph">
+            <a href="tel:#" aria-label="Call Rajesh Kumar"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>
+            <a href="#" aria-label="Message Rajesh Kumar"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg></a>
+          </div>
+        </div>
+      </div>
+      <div class="db-ec dnd">
+        <div class="db-ec-top">
+          <div class="db-ec-av busy">MA</div>
+          <div>
+            <div class="db-ec-n">Mohammed Ashraf</div>
+            <div class="db-ec-r">Service Engineer</div>
+            <div class="db-ec-z"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Dubai West</div>
+          </div>
+          <button class="db-row-act" aria-label="Actions for Mohammed Ashraf"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        </div>
+        <div class="db-ec-sk"><span class="db-tag">ETP</span><span class="db-tag">Blowers</span><span class="db-tag">Mechanical</span><span class="db-tag cert">Confined space</span></div>
+        <div class="db-ec-load">
+          <div class="db-ec-load-t">
+            <span class="db-ec-load-l">Today&rsquo;s load</span>
+            <span class="db-ec-load-v">4<small> / 7 visits</small></span>
+          </div>
+          <div class="db-ec-bar"><i class="d" style="width:14.2857%"></i><i class="d" style="width:14.2857%"></i><i class="p" style="width:14.2857%"></i><i class="p" style="width:14.2857%"></i><i class="o" style="width:14.2857%"></i><i class="o" style="width:14.2857%"></i><i class="o" style="width:14.2857%"></i></div>
+          <div class="db-ec-cap">Over capacity by <b>1 visit</b></div>
+        </div>
+        <div class="db-ec-st">
+          <div class="db-ec-st-i"><div class="db-ec-st-v">212</div><div class="db-ec-st-l">Visits YTD</div></div>
+          <div class="db-ec-st-i"><div class="db-ec-st-v">91%</div><div class="db-ec-st-l">On time</div></div>
+          <div class="db-ec-st-i"><div class="db-ec-st-v">5.1</div><div class="db-ec-st-l">Avg / day</div></div>
+        </div>
+        <div class="db-ec-ft">
+          <a href="waterbird-visit-schedule-page.html" class="db-link">View schedule <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          <div class="db-ec-ph">
+            <a href="tel:#" aria-label="Call Mohammed Ashraf"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>
+            <a href="#" aria-label="Message Mohammed Ashraf"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg></a>
+          </div>
+        </div>
+      </div>
+      <div class="db-ec">
+        <div class="db-ec-top">
+          <div class="db-ec-av on">SP</div>
+          <div>
+            <div class="db-ec-n">Suresh Pillai</div>
+            <div class="db-ec-r">Pump Specialist</div>
+            <div class="db-ec-z"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Dubai Marina &amp; Palm</div>
+          </div>
+          <button class="db-row-act" aria-label="Actions for Suresh Pillai"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        </div>
+        <div class="db-ec-sk"><span class="db-tag">Booster sets</span><span class="db-tag">VFD</span><span class="db-tag">Vertical turbine</span><span class="db-tag">Electrical</span></div>
+        <div class="db-ec-load">
+          <div class="db-ec-load-t">
+            <span class="db-ec-load-l">Today&rsquo;s load</span>
+            <span class="db-ec-load-v">4<small> / 4 visits</small></span>
+          </div>
+          <div class="db-ec-bar"><i class="d" style="width:25.0000%"></i><i class="d" style="width:25.0000%"></i><i class="p" style="width:25.0000%"></i><i class="p" style="width:25.0000%"></i></div>
+          <div class="db-ec-cap">4 of 6 slots used</div>
+        </div>
+        <div class="db-ec-st">
+          <div class="db-ec-st-i"><div class="db-ec-st-v">198</div><div class="db-ec-st-l">Visits YTD</div></div>
+          <div class="db-ec-st-i"><div class="db-ec-st-v">97%</div><div class="db-ec-st-l">On time</div></div>
+          <div class="db-ec-st-i"><div class="db-ec-st-v">4.2</div><div class="db-ec-st-l">Avg / day</div></div>
+        </div>
+        <div class="db-ec-ft">
+          <a href="waterbird-visit-schedule-page.html" class="db-link">View schedule <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          <div class="db-ec-ph">
+            <a href="tel:#" aria-label="Call Suresh Pillai"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>
+            <a href="#" aria-label="Message Suresh Pillai"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg></a>
+          </div>
+        </div>
+      </div>
+      <div class="db-ec dnd">
+        <div class="db-ec-top">
+          <div class="db-ec-av busy">AV</div>
+          <div>
+            <div class="db-ec-n">Anil Varghese</div>
+            <div class="db-ec-r">Service Engineer</div>
+            <div class="db-ec-z"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Dubai East &amp; Sharjah</div>
+          </div>
+          <button class="db-row-act" aria-label="Actions for Anil Varghese"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        </div>
+        <div class="db-ec-sk"><span class="db-tag">STP</span><span class="db-tag">Cooling tower</span><span class="db-tag">Chemical handling</span></div>
+        <div class="db-ec-load">
+          <div class="db-ec-load-t">
+            <span class="db-ec-load-l">Today&rsquo;s load</span>
+            <span class="db-ec-load-v">4<small> / 6 visits</small></span>
+          </div>
+          <div class="db-ec-bar"><i class="d" style="width:16.6667%"></i><i class="p" style="width:16.6667%"></i><i class="p" style="width:16.6667%"></i><i class="p" style="width:16.6667%"></i><i class="o" style="width:16.6667%"></i><i class="o" style="width:16.6667%"></i></div>
+          <div class="db-ec-cap">6 of 6 slots used</div>
+        </div>
+        <div class="db-ec-st">
+          <div class="db-ec-st-i"><div class="db-ec-st-v">221</div><div class="db-ec-st-l">Visits YTD</div></div>
+          <div class="db-ec-st-i"><div class="db-ec-st-v">89%</div><div class="db-ec-st-l">On time</div></div>
+          <div class="db-ec-st-i"><div class="db-ec-st-v">4.9</div><div class="db-ec-st-l">Avg / day</div></div>
+        </div>
+        <div class="db-ec-ft">
+          <a href="waterbird-visit-schedule-page.html" class="db-link">View schedule <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          <div class="db-ec-ph">
+            <a href="tel:#" aria-label="Call Anil Varghese"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>
+            <a href="#" aria-label="Message Anil Varghese"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg></a>
+          </div>
+        </div>
+      </div>
+      <div class="db-ec">
+        <div class="db-ec-top">
+          <div class="db-ec-av on">PN</div>
+          <div>
+            <div class="db-ec-n">Prakash Nair</div>
+            <div class="db-ec-r">Senior Service Engineer</div>
+            <div class="db-ec-z"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Abu Dhabi &amp; Al Ain</div>
+          </div>
+          <button class="db-row-act" aria-label="Actions for Prakash Nair"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        </div>
+        <div class="db-ec-sk"><span class="db-tag">ETP</span><span class="db-tag">STP</span><span class="db-tag">Lab sampling</span><span class="db-tag cert">ADNOC HSE pass</span></div>
+        <div class="db-ec-load">
+          <div class="db-ec-load-t">
+            <span class="db-ec-load-l">Today&rsquo;s load</span>
+            <span class="db-ec-load-v">2<small> / 3 visits</small></span>
+          </div>
+          <div class="db-ec-bar"><i class="d" style="width:33.3333%"></i><i class="p" style="width:33.3333%"></i><i class="o" style="width:33.3333%"></i></div>
+          <div class="db-ec-cap">3 of 5 slots used</div>
+        </div>
+        <div class="db-ec-st">
+          <div class="db-ec-st-i"><div class="db-ec-st-v">174</div><div class="db-ec-st-l">Visits YTD</div></div>
+          <div class="db-ec-st-i"><div class="db-ec-st-v">96%</div><div class="db-ec-st-l">On time</div></div>
+          <div class="db-ec-st-i"><div class="db-ec-st-v">3.8</div><div class="db-ec-st-l">Avg / day</div></div>
+        </div>
+        <div class="db-ec-ft">
+          <a href="waterbird-visit-schedule-page.html" class="db-link">View schedule <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          <div class="db-ec-ph">
+            <a href="tel:#" aria-label="Call Prakash Nair"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>
+            <a href="#" aria-label="Message Prakash Nair"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg></a>
+          </div>
+        </div>
+      </div>
+      <div class="db-ec off">
+        <div class="db-ec-top">
+          <div class="db-ec-av leave">JT</div>
+          <div>
+            <div class="db-ec-n">Jomon Thomas</div>
+            <div class="db-ec-r">Service Engineer</div>
+            <div class="db-ec-z"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Northern Emirates</div>
+          </div>
+          <button class="db-row-act" aria-label="Actions for Jomon Thomas"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        </div>
+        <div class="db-ec-sk"><span class="db-tag">STP</span><span class="db-tag">Dosing systems</span><span class="db-tag">Tank cleaning</span></div>
+        <div class="db-ec-leave">On annual leave until 9 September &mdash; 4 visits reassigned to Shameer Salim.</div>
+        <div class="db-ec-load">
+          <div class="db-ec-load-t">
+            <span class="db-ec-load-l">Today&rsquo;s load</span>
+            <span class="db-ec-load-v"><small>No visits today</small></span>
+          </div>
+          <div class="db-ec-bar"></div>
+          <div class="db-ec-cap">Unavailable this week</div>
+        </div>
+        <div class="db-ec-st">
+          <div class="db-ec-st-i"><div class="db-ec-st-v">163</div><div class="db-ec-st-l">Visits YTD</div></div>
+          <div class="db-ec-st-i"><div class="db-ec-st-v">94%</div><div class="db-ec-st-l">On time</div></div>
+          <div class="db-ec-st-i"><div class="db-ec-st-v">3.9</div><div class="db-ec-st-l">Avg / day</div></div>
+        </div>
+        <div class="db-ec-ft">
+          <a href="waterbird-visit-schedule-page.html" class="db-link">View schedule <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          <div class="db-ec-ph">
+            <a href="tel:#" aria-label="Call Jomon Thomas"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>
+            <a href="#" aria-label="Message Jomon Thomas"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="db-panel" style="margin-bottom:16px">
+      <div class="db-pg">
+        <span class="db-pg-i">Showing 6 of 24 engineers</span>
+        <div class="db-pg-c">
+          <button class="db-pg-b" disabled aria-label="Previous page"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <button class="db-pg-b on">1</button>
+          <button class="db-pg-b">2</button>
+          <button class="db-pg-b">3</button>
+          <button class="db-pg-b">4</button>
+          <button class="db-pg-b" aria-label="Next page"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Utilisation + certifications -->
+    <div class="db-grid-3">
+      <div class="db-panel">
+        <div class="db-panel-hd">
+          <div>
+            <div class="db-panel-ey">Capacity</div>
+            <h2>Utilisation this week by zone</h2>
+          </div>
+          <div class="db-panel-hd-r">
+            <div class="db-seg">
+              <button class="on">This week</button>
+              <button>This month</button>
+            </div>
+          </div>
+        </div>
+        <div class="db-panel-bd">
+          <div class="db-bl">
+            <div class="db-bl-i">
+              <div class="db-bl-top"><span class="db-bl-lbl">Dubai West &mdash; 5 engineers</span><span class="db-bl-v">104% <small>142 of 137 slots</small></span></div>
+              <div class="db-bl-tr"><div class="db-bl-fl" style="width:100%;background:linear-gradient(90deg,#c0483f,#e07a70)"></div></div>
+            </div>
+            <div class="db-bl-i">
+              <div class="db-bl-top"><span class="db-bl-lbl">Dubai East &amp; Sharjah &mdash; 6 engineers</span><span class="db-bl-v">96% <small>158 of 165 slots</small></span></div>
+              <div class="db-bl-tr"><div class="db-bl-fl" style="width:96%"></div></div>
+            </div>
+            <div class="db-bl-i">
+              <div class="db-bl-top"><span class="db-bl-lbl">Dubai Central &mdash; 5 engineers</span><span class="db-bl-v">88% <small>121 of 137 slots</small></span></div>
+              <div class="db-bl-tr"><div class="db-bl-fl" style="width:88%"></div></div>
+            </div>
+            <div class="db-bl-i">
+              <div class="db-bl-top"><span class="db-bl-lbl">Abu Dhabi &amp; Al Ain &mdash; 5 engineers</span><span class="db-bl-v">71% <small>97 of 137 slots</small></span></div>
+              <div class="db-bl-tr"><div class="db-bl-fl" style="width:71%"></div></div>
+            </div>
+            <div class="db-bl-i">
+              <div class="db-bl-top"><span class="db-bl-lbl">Northern Emirates &mdash; 3 engineers</span><span class="db-bl-v">62% <small>51 of 82 slots</small></span></div>
+              <div class="db-bl-tr"><div class="db-bl-fl" style="width:62%"></div></div>
+            </div>
+          </div>
+          <div class="db-lg">
+            <div class="db-lg-i">Dubai West is running over capacity while Northern Emirates has 31 free slots. Moving the Ajman and Fujairah visits north would even out the week.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="db-panel">
+        <div class="db-panel-hd">
+          <div>
+            <div class="db-panel-ey">Compliance</div>
+            <h2>Certifications expiring</h2>
+          </div>
+        </div>
+        <div class="db-panel-bd flush">
+          <div class="db-cx">
+            <div class="db-cx-i soon">
+              <div class="db-cx-d"><div class="db-cx-dd">12</div><div class="db-cx-dm">Sep</div></div>
+              <div>
+                <div class="db-cx-n">Confined space entry</div>
+                <div class="db-cx-m">Mohammed Ashraf &middot; 8 days left</div>
+              </div>
+              <span class="db-chip s-over">Renew</span>
+            </div>
+            <div class="db-cx-i soon">
+              <div class="db-cx-d"><div class="db-cx-dd">28</div><div class="db-cx-dm">Sep</div></div>
+              <div>
+                <div class="db-cx-n">ADNOC HSE site pass</div>
+                <div class="db-cx-m">Prakash Nair &middot; 24 days left</div>
+              </div>
+              <span class="db-chip s-open">Due</span>
+            </div>
+            <div class="db-cx-i">
+              <div class="db-cx-d"><div class="db-cx-dd">14</div><div class="db-cx-dm">Oct</div></div>
+              <div>
+                <div class="db-cx-n">Chemical handling &mdash; COSHH</div>
+                <div class="db-cx-m">Anil Varghese &middot; 40 days left</div>
+              </div>
+              <span class="db-chip s-sched">Tracked</span>
+            </div>
+            <div class="db-cx-i">
+              <div class="db-cx-d"><div class="db-cx-dd">02</div><div class="db-cx-dm">Nov</div></div>
+              <div>
+                <div class="db-cx-n">Electrical LV competency</div>
+                <div class="db-cx-m">Suresh Pillai &middot; 59 days left</div>
+              </div>
+              <span class="db-chip s-sched">Tracked</span>
+            </div>
+            <div class="db-cx-i">
+              <div class="db-cx-d"><div class="db-cx-dd">19</div><div class="db-cx-dm">Nov</div></div>
+              <div>
+                <div class="db-cx-n">UAE driving permit &mdash; heavy</div>
+                <div class="db-cx-m">Shameer Salim &middot; 76 days left</div>
+              </div>
+              <span class="db-chip s-sched">Tracked</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
